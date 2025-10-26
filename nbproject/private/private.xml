@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/controller/home/HomeServlet.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/web/about.html</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/model/Role.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/web/index.html</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/model/CarCategory.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/service/CarService.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/web/WEB-INF/web.xml</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/web/blog.html</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/web/cars.html</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/model/FeatureDefinition.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/dal/DBContext.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/model/CarFeature.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/model/User.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/model/CarImage.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/model/Car.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/model/Brand.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/dal/CarDAO.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/web/index.jsp</file>
+        </group>
+    </open-files>
+</project-private>

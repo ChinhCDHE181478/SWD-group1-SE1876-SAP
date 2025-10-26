@@ -1,9 +1,15 @@
+<%-- 
+    Document   : index
+    Created on : Oct 26, 2025, 2:45:23 AM
+    Author     : Chinh
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
     <head>
-        <meta charset="utf-8">
-        <title>Cental - Car Rent Website Template</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Cental - Car Rent Website</title>
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta content="" name="keywords">
         <meta content="" name="description">
@@ -27,7 +33,6 @@
         <!-- Template Stylesheet -->
         <link href="css/style.css" rel="stylesheet">
     </head>
-
     <body>
 
         <!-- Spinner Start -->
@@ -75,7 +80,7 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarCollapse">
                         <div class="navbar-nav mx-auto py-0">
-                            <a href="index.html" class="nav-item nav-link active">Home</a>
+                            <a href="HomeServlet" class="nav-item nav-link active">Home</a>
                             <a href="about.html" class="nav-item nav-link">About</a>
                             <a href="service.html" class="nav-item nav-link">Service</a>
                             <a href="blog.html" class="nav-item nav-link">Blog</a>
@@ -1130,5 +1135,4 @@
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
     </body>
-
 </html>
