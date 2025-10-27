@@ -4,7 +4,8 @@
  */
 package service;
 
-import dal.CarDAO;
+import dal.*;
+import java.sql.Timestamp;
 import java.util.List;
 import model.Car;
 
@@ -23,5 +24,10 @@ public class CarService {
     public Car getCarById (Long id) {
         CarDAO c = new CarDAO();
         return c.getCarById(id);
+    }
+    
+    public Boolean isAvailableToRent(long carId, Timestamp startDate, Timestamp endDate) {
+        BookingDAO b = new BookingDAO();
+        return b.isCarAvailable(carId, startDate, endDate);
     }
 }

@@ -10,8 +10,10 @@ package model;
  */
 import java.sql.Timestamp;
 import java.util.List;
+import model.temp.BookingRange;
 
 public class Car {
+
     private long carId;
     private String model;
     private String licensePlate;
@@ -22,6 +24,7 @@ public class Car {
     private Double deposit;
     private Timestamp updateAt;
     private Double adminFeePercent;
+    private String driverLicenseRequired;
 
     // Quan hệ n-1
     private Brand brand;
@@ -32,10 +35,12 @@ public class Car {
     private List<CarImage> images;
     private List<CarFeature> features;
 
+    private List<BookingRange> bookedRanges;
+
     public Car() {
     }
 
-    public Car(long carId, String model, String licensePlate, String seat, double pricePerDay, String status, Timestamp createdAt, double deposit, Timestamp updateAt, double adminFeePercent, Brand brand, CarCategory category, User owner, List<CarImage> images, List<CarFeature> features) {
+    public Car(long carId, String model, String licensePlate, String seat, double pricePerDay, String status, Timestamp createdAt, double deposit, Timestamp updateAt, double adminFeePercent, String driverLicenseRequired, Brand brand, CarCategory category, User owner, List<CarImage> images, List<CarFeature> features) {
         this.carId = carId;
         this.model = model;
         this.licensePlate = licensePlate;
@@ -46,11 +51,28 @@ public class Car {
         this.deposit = deposit;
         this.updateAt = updateAt;
         this.adminFeePercent = adminFeePercent;
+        this.driverLicenseRequired = driverLicenseRequired;
         this.brand = brand;
         this.category = category;
         this.owner = owner;
         this.images = images;
         this.features = features;
+    }
+
+    public List<BookingRange> getBookedRanges() {
+        return bookedRanges;
+    }
+
+    public void setBookedRanges(List<BookingRange> bookedRanges) {
+        this.bookedRanges = bookedRanges;
+    }
+
+    public String getDriverLicenseRequired() {
+        return driverLicenseRequired;
+    }
+
+    public void setDriverLicenseRequired(String driverLicenseRequired) {
+        this.driverLicenseRequired = driverLicenseRequired;
     }
 
     public long getCarId() {
@@ -172,5 +194,5 @@ public class Car {
     public void setFeatures(List<CarFeature> features) {
         this.features = features;
     }
-    
+
 }

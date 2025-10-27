@@ -84,7 +84,7 @@
                             <a href="about.html" class="nav-item nav-link">About</a>
                             <a href="service.html" class="nav-item nav-link">Service</a>
                             <a href="blog.html" class="nav-item nav-link">Blog</a>
-                            
+
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                                 <div class="dropdown-menu m-0">
@@ -294,6 +294,69 @@
             </div>
         </div>
         <!-- Carousel End -->
+
+        <!-- Car categories Start -->
+        <div class="container-fluid categories pb-5">
+            <div class="container pb-5">
+                <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 800px; margin-top: 100px">
+                    <h1 class="display-5 text-capitalize mb-3">Vehicle <span class="text-primary">Categories</span></h1>
+                    <p class="mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ut amet nemo expedita asperiores commodi accusantium at cum harum, excepturi, quia tempora cupiditate! Adipisci facilis modi quisquam quia distinctio,
+                    </p>
+                </div>
+                <div class="categories-carousel owl-carousel wow fadeInUp" data-wow-delay="0.1s">
+                    <c:forEach var="car" items="${cars}">
+                        <div class="categories-item p-4">
+                            <div class="categories-item-inner">
+                                <div class="categories-img rounded-top">
+                                    <c:choose>
+                                        <c:when test="${not empty car.images}">
+                                            <img src="${car.images[0].image}" class="img-fluid w-100 rounded-top" alt="${car.model}">
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img src="img/default-car.png" class="img-fluid w-100 rounded-top" alt="default">
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
+                                <div class="categories-content rounded-bottom p-4">
+                                    <h4>${car.brand.brandName} ${car.model}</h4>
+                                    <div class="mb-4">
+                                        <h4 class="bg-white text-primary rounded-pill py-2 px-4 mb-0">$${car.pricePerDay}/Day</h4>
+                                    </div>
+                                    <div class="row gy-2 gx-0 text-center mb-4">
+                                        <div class="col-4 border-end border-white">
+                                            <i class="fa fa-users text-dark"></i> 
+                                            <span class="text-body ms-1">${car.seat} Seat</span>
+                                        </div>
+                                        <div class="col-4 border-end border-white">
+                                            <i class="fa fa-car text-dark"></i> 
+                                            <span class="text-body ms-1">${car.brand.brandName}</span>
+                                        </div>
+                                        <div class="col-4">
+                                            <i class="fa fa-gas-pump text-dark"></i> 
+                                            <span class="text-body ms-1">${car.category.cateName}</span>
+                                        </div>
+                                        <div class="col-4 border-end border-white">
+                                            <i class="fa fa-car text-dark"></i> 
+                                            <span class="text-body ms-1">${car.driverLicenseRequired}</span>
+                                        </div>
+                                        <div class="col-4 border-end border-white">
+                                            <i class="fa fa-cogs text-dark"></i> 
+                                            <span class="text-body ms-1">${car.status}</span>
+                                        </div>
+                                        <div class="col-4">
+                                            <i class="fa fa-road text-dark"></i> 
+                                            <span class="text-body ms-1">${car.carId}</span>
+                                        </div>
+                                    </div>
+                                    <a href="CarDetailServlet?carId=${car.carId}" class="btn btn-primary rounded-pill d-flex justify-content-center py-3">Book Now</a>
+                                </div>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </div>
+            </div>
+        </div>
+        <!-- Car categories End -->
 
         <!-- Features Start -->
         <div class="container-fluid feature py-5">
@@ -611,6 +674,9 @@
                                     </div>
                                     <div class="col-4 border-end border-white">
                                         <i class="fa fa-cogs text-dark"></i> <span class="text-body ms-1">AUTO</span>
+                                    </div>
+                                    <div class="col-4">
+                                        <i class="fa fa-road text-dark"></i> <span class="text-body ms-1">27K</span>
                                     </div>
                                     <div class="col-4">
                                         <i class="fa fa-road text-dark"></i> <span class="text-body ms-1">27K</span>
@@ -1098,7 +1164,7 @@
             </div>
         </div>
         <!-- Footer End -->
-        
+
         <!-- Copyright Start -->
         <div class="container-fluid copyright py-4">
             <div class="container">
@@ -1121,18 +1187,18 @@
         <!-- Back to Top -->
         <a href="#" class="btn btn-secondary btn-lg-square rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>   
 
-        
-    <!-- JavaScript Libraries -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/wow/wow.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/counterup/counterup.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    
 
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+        <!-- JavaScript Libraries -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="lib/wow/wow.min.js"></script>
+        <script src="lib/easing/easing.min.js"></script>
+        <script src="lib/waypoints/waypoints.min.js"></script>
+        <script src="lib/counterup/counterup.min.js"></script>
+        <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+
+        <!-- Template Javascript -->
+        <script src="js/main.js"></script>
     </body>
 </html>

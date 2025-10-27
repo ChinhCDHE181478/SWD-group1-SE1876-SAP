@@ -13,6 +13,7 @@ import model.User;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -20,13 +21,14 @@ import model.CarFeature;
 import model.CarImage;
 import model.FeatureDefinition;
 import model.Role;
+import model.temp.BookingRange;
 
 /**
  *
  * @author Chinh
  */
-public class CarDAO extends DBContext<Car>{
-    
+public class CarDAO extends DBContext<Car> {
+
     public List<Car> filterCars(
             String model, String seat, Double minPrice, Double maxPrice,
             String status, Long categoryId,
@@ -40,6 +42,7 @@ public class CarDAO extends DBContext<Car>{
                 c.car_id, c.model, c.license_plate, c.seat,
                 c.price_per_day, c.status, c.created_at,
                 c.deposit, c.update_at, c.admin_fee_percent,
+                c.driver_license_required,
                 b.brand_id, b.brand_name,
                 cat.cate_id, cat.cate_name,
                 u.user_id, u.name, u.email, u.phone,
@@ -129,6 +132,7 @@ public class CarDAO extends DBContext<Car>{
                     car.setDeposit(rs.getDouble("deposit"));
                     car.setUpdateAt(rs.getTimestamp("update_at"));
                     car.setAdminFeePercent(rs.getDouble("admin_fee_percent"));
+                    car.setDriverLicenseRequired(rs.getString("driver_license_required"));
 
                     // Brand
                     Brand brand = new Brand();
@@ -189,7 +193,7 @@ public class CarDAO extends DBContext<Car>{
 
     // Đếm tổng số bản ghi để tính totalPages
     public int countFilteredCars(String model, String seat, Double minPrice, Double maxPrice,
-                                 String status, Long categoryId) {
+            String status, Long categoryId) {
         int total = 0;
 
         StringBuilder sql = new StringBuilder("""
@@ -255,39 +259,42 @@ public class CarDAO extends DBContext<Car>{
 
         return total;
     }
-    
-    
+
     public Car getCarById(long carId) {
         Car car = null;
 
         String sql = """
-            SELECT 
-                c.car_id, c.model, c.license_plate, c.seat,
-                c.price_per_day, c.status, c.created_at,
-                c.deposit, c.update_at, c.admin_fee_percent,
+        SELECT 
+            c.car_id, c.model, c.license_plate, c.seat,
+            c.price_per_day, c.status, c.created_at,
+            c.deposit, c.update_at, c.admin_fee_percent,
+            c.driver_license_required,
 
-                b.brand_id, b.brand_name,
-                cat.cate_id, cat.cate_name,
+            b.brand_id, b.brand_name,
+            cat.cate_id, cat.cate_name,
 
-                u.user_id, u.name AS owner_name, u.email AS owner_email, u.phone AS owner_phone,
-                r.role_id, r.role_name, r.description AS role_desc,
+            u.user_id, u.name AS owner_name, u.email AS owner_email, u.phone AS owner_phone,
+            r.role_id, r.role_name, r.description AS role_desc,
 
-                img.image_id, img.image,
+            img.image_id, img.image,
 
-                f.feature_id, f.feature_value,
-                d.feature_def_id, d.feature_name, d.description AS feature_desc
+            f.feature_id, f.feature_value,
+            d.feature_def_id, d.feature_name, d.description AS feature_desc,
 
-            FROM Car c
-            LEFT JOIN Brand b ON c.brand_id = b.brand_id
-            LEFT JOIN CarCategory cat ON c.category_id = cat.cate_id
-            LEFT JOIN [User] u ON c.owner_id = u.user_id
-            LEFT JOIN [Role] r ON u.role_id = r.role_id
-            LEFT JOIN Car_Image img ON c.car_id = img.car_id
-            LEFT JOIN Car_Feature f ON c.car_id = f.car_id
-            LEFT JOIN Feature_Definition d ON f.feature_def_id = d.feature_def_id
-            WHERE c.car_id = ?
-            ORDER BY img.image_id, f.feature_id
-        """;
+            bk.start_date AS booking_start, bk.end_date AS booking_end
+
+        FROM Car c
+        LEFT JOIN Brand b ON c.brand_id = b.brand_id
+        LEFT JOIN CarCategory cat ON c.category_id = cat.cate_id
+        LEFT JOIN [User] u ON c.owner_id = u.user_id
+        LEFT JOIN [Role] r ON u.role_id = r.role_id
+        LEFT JOIN Car_Image img ON c.car_id = img.car_id
+        LEFT JOIN Car_Feature f ON c.car_id = f.car_id
+        LEFT JOIN Feature_Definition d ON f.feature_def_id = d.feature_def_id
+        LEFT JOIN Booking bk ON c.car_id = bk.car_id AND bk.status IN ('PENDING', 'CONFIRMED', 'ONGOING')
+        WHERE c.car_id = ?
+        ORDER BY img.image_id, f.feature_id
+    """;
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setLong(1, carId);
@@ -317,6 +324,7 @@ public class CarDAO extends DBContext<Car>{
                     car.setDeposit(rs.getDouble("deposit"));
                     car.setUpdateAt(rs.getTimestamp("update_at"));
                     car.setAdminFeePercent(rs.getDouble("admin_fee_percent"));
+                    car.setDriverLicenseRequired(rs.getString("driver_license_required"));
 
                     // Brand
                     Brand brand = new Brand();
@@ -342,12 +350,12 @@ public class CarDAO extends DBContext<Car>{
                     owner.setEmail(rs.getString("owner_email"));
                     owner.setPhone(rs.getString("owner_phone"));
                     owner.setRole(role);
-
                     car.setOwner(owner);
 
                     // Initialize collections
                     car.setImages(new ArrayList<>());
                     car.setFeatures(new ArrayList<>());
+                    car.setBookedRanges(new ArrayList<>());
 
                     carMap.put(id, car);
                 }
@@ -386,6 +394,17 @@ public class CarDAO extends DBContext<Car>{
                         car.getFeatures().add(feature);
                     }
                 }
+
+                // Add booking range (avoid duplicates)
+                Timestamp start = rs.getTimestamp("booking_start");
+                Timestamp end = rs.getTimestamp("booking_end");
+                if (start != null && end != null) {
+                    boolean exists = car.getBookedRanges().stream()
+                            .anyMatch(br -> br.getStartDate().equals(start) && br.getEndDate().equals(end));
+                    if (!exists) {
+                        car.getBookedRanges().add(new BookingRange(start, end));
+                    }
+                }
             }
 
             rs.close();
@@ -405,12 +424,12 @@ public class CarDAO extends DBContext<Car>{
 
         return car;
     }
-    
+
     
     public static void main(String[] args) {
         CarDAO c = new CarDAO();
         List<Car> c1 = c.filterCars(null, null, null, null, null, null, 1, 10);
-        for(Car c2 : c1) {
+        for (Car c2 : c1) {
             System.out.println(c2.getCarId());
         }
     }
