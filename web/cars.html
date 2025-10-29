@@ -76,7 +76,7 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarCollapse">
                         <div class="navbar-nav mx-auto py-0">
-                            <a href="index.html" class="nav-item nav-link">Home</a>
+                            <a href="HomeServlet" class="nav-item nav-link">Home</a>
                             <a href="about.html" class="nav-item nav-link">About</a>
                             <a href="service.html" class="nav-item nav-link">Service</a>
                             <a href="blog.html" class="nav-item nav-link">Blog</a>
@@ -92,6 +92,15 @@
                                 </div>
                             </div>
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
+                            <!-- Nếu chưa đăng nhập -->
+                            <c:if test="${empty sessionScope.userLogin}">
+                                <a href="contact.html" class="nav-item nav-link">Contact</a>
+                            </c:if>
+
+                            <!-- Nếu đã đăng nhập -->
+                            <c:if test="${not empty sessionScope.userLogin}">
+                                <a href="${pageContext.request.contextPath}/profile" class="nav-item nav-link">Profile</a>
+                            </c:if>
                         </div>
                         <a href="#" class="btn btn-primary rounded-pill py-2 px-4">Get Started</a>
                     </div>

@@ -21,11 +21,12 @@ public class Booking {
     private Timestamp createdAt;
     private Timestamp updateAt;
     private User updateBy;
+    private Address address;
 
     public Booking() {
     }
 
-    public Booking(long bookingId, User customer, Car car, Promotion promotion, Timestamp startDate, Timestamp endDate, String status, Timestamp createdAt, Timestamp updateAt, User updateBy) {
+    public Booking(long bookingId, User customer, Car car, Promotion promotion, Timestamp startDate, Timestamp endDate, String status, Timestamp createdAt, Timestamp updateAt, User updateBy, Address address) {
         this.bookingId = bookingId;
         this.customer = customer;
         this.car = car;
@@ -36,11 +37,22 @@ public class Booking {
         this.createdAt = createdAt;
         this.updateAt = updateAt;
         this.updateBy = updateBy;
+        this.address = address;
     }
 
     public long getBookingId() {
         return bookingId;
     }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+    
+    
 
     public void setBookingId(long bookingId) {
         this.bookingId = bookingId;

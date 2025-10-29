@@ -12,8 +12,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.Car;
-import service.CarService;
+import java.util.List;
+import model.*;
+import service.*;
 
 /**
  *
@@ -22,24 +23,23 @@ import service.CarService;
 @WebServlet(name="CarDetailServlet", urlPatterns={"/CarDetailServlet"})
 public class CarDetailServlet extends HttpServlet {
     private final CarService carService = new CarService();
+    private final AddressService addressService = new AddressService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
+        List<Province> provinces = addressService.getAllProvincesWithDistrictsAndWards();
         Long carId = Long.valueOf(request.getParameter("carId"));
         Car c = carService.getCarById(carId);
+        System.out.println(c);
+        request.setAttribute("provinces", provinces);
         request.setAttribute("car", c);
         request.getRequestDispatcher("/car.jsp").forward(request, response);
-    } 
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
     }
-
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
 
 }

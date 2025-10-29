@@ -13,48 +13,55 @@ import model.Booking;
 import java.sql.*;
 import model.*;
 
-public class BookingDAO extends DBContext<Booking>{
-    
-    public boolean insertBooking(Booking booking) {
+public class BookingDAO extends DBContext<Booking> {
+
+     public long insertBooking(Booking booking) throws SQLException {
         String sql = """
-            INSERT INTO Booking
-            (customer_id, car_id, start_date, end_date, status, created_at, promotion_id, update_at, update_by)
-            VALUES (?, ?, ?, ?, ?, GETDATE(), ?, ?, ?)
+            INSERT INTO Booking (
+                customer_id, car_id, start_date, end_date, status,
+                created_at, promotion_id, update_at, update_by, address_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """;
+        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            // set các trường, nếu null thì setNull
+            if (booking.getCustomer() != null && booking.getCustomer().getUserId() > 0)
+                ps.setLong(1, booking.getCustomer().getUserId());
+            else ps.setNull(1, Types.BIGINT);
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            if (booking.getCar() != null && booking.getCar().getCarId() > 0)
+                ps.setLong(2, booking.getCar().getCarId());
+            else ps.setNull(2, Types.BIGINT);
 
-            ps.setLong(1, booking.getCustomer().getUserId());
-            ps.setLong(2, booking.getCar().getCarId());
-            ps.setTimestamp(3, booking.getStartDate());
-            ps.setTimestamp(4, booking.getEndDate());
+            if (booking.getStartDate() != null)
+                ps.setTimestamp(3, booking.getStartDate());
+            else ps.setNull(3, Types.TIMESTAMP);
+
+            if (booking.getEndDate() != null)
+                ps.setTimestamp(4, booking.getEndDate());
+            else ps.setNull(4, Types.TIMESTAMP);
+
             ps.setString(5, booking.getStatus());
+            ps.setTimestamp(6, booking.getCreatedAt());
 
-            // promotion (có thể null)
-            if (booking.getPromotion() != null) {
-                ps.setLong(6, booking.getPromotion().getPromotionId());
-            } else {
-                ps.setNull(6, Types.BIGINT);
-            }
+            ps.setNull(7, Types.BIGINT);  // promotion_id
+            ps.setNull(8, Types.TIMESTAMP); // update_at
+            ps.setNull(9, Types.BIGINT); // update_by
 
-            ps.setTimestamp(7, booking.getUpdateAt());
-            if (booking.getUpdateBy() != null) {
-                ps.setLong(8, booking.getUpdateBy().getUserId());
-            } else {
-                ps.setNull(8, Types.BIGINT);
-            }
+            if (booking.getAddress() != null && booking.getAddress().getAddressId() > 0)
+                ps.setLong(10, booking.getAddress().getAddressId());
+            else ps.setNull(10, Types.BIGINT);
 
-            int rows = ps.executeUpdate();
-            return rows > 0;
-
-        } catch (SQLException e) {
+            ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) return rs.getLong(1);
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            try { connection.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+            try { connection.close(); } catch (Exception ignore) {}
         }
-        return false;
+        return 0;
     }
-    
+
     public boolean isCarAvailable(long carId, Timestamp startDate, Timestamp endDate) {
         String sql = """
             SELECT COUNT(*) AS total
@@ -88,8 +95,13 @@ public class BookingDAO extends DBContext<Booking>{
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return false; // mặc định là không khả dụng nếu có lỗi
     }
+    
 }

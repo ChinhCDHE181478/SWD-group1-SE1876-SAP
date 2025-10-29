@@ -37,6 +37,11 @@ public class Car {
 
     private List<BookingRange> bookedRanges;
 
+    @Override
+    public String toString() {
+        return "Car{" + "carId=" + carId + ", model=" + model + ", licensePlate=" + licensePlate + ", seat=" + seat + ", pricePerDay=" + pricePerDay + ", status=" + status + ", createdAt=" + createdAt + ", deposit=" + deposit + ", updateAt=" + updateAt + ", adminFeePercent=" + adminFeePercent + ", driverLicenseRequired=" + driverLicenseRequired + ", brand=" + brand + ", category=" + category + ", owner=" + owner + ", images=" + images + ", features=" + features + ", bookedRanges=" + bookedRanges + '}';
+    }
+
     public Car() {
     }
 

@@ -5,8 +5,10 @@
 package service;
 
 import dal.DrivingLicenseDAO;
+import dal.UserDAO;
 import java.util.List;
 import model.DrivingLicense;
+import model.User;
 
 /**
  *
@@ -14,5 +16,8 @@ import model.DrivingLicense;
  */
 public class UserService {
     
-    
+    public boolean updateProfile(User user) {
+        UserDAO userDAO = new UserDAO();
+        return userDAO.updateUser(user);
+    }
 }

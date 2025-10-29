@@ -8,33 +8,79 @@ package service;
  *
  * @author Chinh
  */
+import dal.AddressDAO;
 import dal.BookingDAO;
 import dal.PromotionDAO;
 import model.*;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 
 public class BookingService {
     
-    public boolean createBooking(User customer, Car car, String promoCode,
-                                 Timestamp startDate, Timestamp endDate) {
+    public static void main(String[] args) {
+        BookingService b = new BookingService();
+        User u = new User();
+        u.setUserId(1);
+        Car c = new Car();
+        c.setCarId(1);
+        Timestamp t1 = new Timestamp(1000000);
+        Timestamp t2 = new Timestamp(10000000);
+        Booking bo = b.createBooking(u, c, t1.toString(), t2.toString(), 1l, 1l, 1l, "12", "wall");
+        System.out.println(bo);
+    }
+    
+    public Booking createBooking(User customer, Car car, String start, String end,
+                                 Long provinceId, Long districtId, long wardId,
+                                 String houseNumber, String addressDetail) {
+        AddressDAO addressDAO = new AddressDAO();
+        AddressDAO addressDAO2 = new AddressDAO();
         BookingDAO bookingDAO = new BookingDAO();
-        PromotionDAO promotionDAO = new PromotionDAO();
-        Promotion promotion = null;
-        if (promoCode != null && !promoCode.trim().isEmpty()) {
-            promotion = promotionDAO.getPromotionByCode(promoCode);
+
+        try {
+            // 1️⃣ Chuẩn bị địa chỉ
+            Address address = new Address();
+            address.setUser(customer);
+            address.setHouseNumber(houseNumber);
+            address.setAddressDetail(addressDetail);
+
+            Ward ward = new Ward();
+            ward.setWardId(wardId);
+            address.setWard(ward);
+
+            long addressId = addressDAO.insertAddress(address);
+            if (addressId <= 0) {
+                System.out.println("❌ Insert Address thất bại, không tạo Booking.");
+                return null;
+            }
+
+            address.setAddressId(addressId);
+
+            // 2️⃣ Chuẩn bị Booking
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Booking booking = new Booking();
+            booking.setCustomer(customer);
+            booking.setCar(car);
+            booking.setAddress(address);
+            booking.setStatus("PENDING");
+            booking.setStartDate(new Timestamp(sdf.parse(start).getTime()));
+            booking.setEndDate(new Timestamp(sdf.parse(end).getTime()));
+            booking.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+
+            long bookingId = bookingDAO.insertBooking(booking);
+            if (bookingId <= 0) {
+                System.out.println("❌ Insert Booking thất bại, rollback địa chỉ mới tạo.");
+                // rollback mềm: xoá address vừa tạo (nếu cần)
+                addressDAO2.deleteAddressById(addressId);
+                return null;
+            }
+
+            booking.setBookingId(bookingId);
+            System.out.println("✅ Booking được tạo thành công ID=" + bookingId);
+            return booking;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-
-        Booking booking = new Booking();
-        booking.setCustomer(customer);
-        booking.setCar(car);
-        booking.setPromotion(promotion);
-        booking.setStartDate(startDate);
-        booking.setEndDate(endDate);
-        booking.setStatus("PENDING"); // trạng thái mặc định
-        booking.setCreatedAt(new java.sql.Timestamp(System.currentTimeMillis()));
-        booking.setUpdateAt(null);
-        booking.setUpdateBy(null);
-
-        return bookingDAO.insertBooking(booking);
     }
 }

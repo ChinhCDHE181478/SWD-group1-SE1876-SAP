@@ -19,7 +19,7 @@ public class User {
     private String phone;
     private Role role;
     private Timestamp createdAt;
-    private boolean isDelete;
+    private Boolean isDelete;
     private User createdBy;
     private String avatar;
     private String status;
@@ -30,7 +30,7 @@ public class User {
     public User() {
     }
 
-    public User(long userId, String name, String email, String password, String phone, Role role, Timestamp createdAt, boolean isDelete, User createdBy, String avatar, String status, List<Car> carsOwned) {
+    public User(long userId, String name, String email, String password, String phone, Role role, Timestamp createdAt, Boolean isDelete, User createdBy, String avatar, String status, List<Car> carsOwned) {
         this.userId = userId;
         this.name = name;
         this.email = email;
@@ -44,6 +44,8 @@ public class User {
         this.status = status;
         this.carsOwned = carsOwned;
     }
+    
+    
 
     public long getUserId() {
         return userId;
@@ -101,11 +103,11 @@ public class User {
         this.createdAt = createdAt;
     }
 
-    public boolean isIsDelete() {
+    public Boolean isIsDelete() {
         return isDelete;
     }
 
-    public void setIsDelete(boolean isDelete) {
+    public void setIsDelete(Boolean isDelete) {
         this.isDelete = isDelete;
     }
 

@@ -96,8 +96,36 @@
                                 </div>
                             </div>
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
+                            <!-- Nếu chưa đăng nhập -->
+                            <c:if test="${empty sessionScope.userLogin}">
+                                <a href="contact.html" class="nav-item nav-link">Contact</a>
+                            </c:if>
+
+                            <!-- Nếu đã đăng nhập -->
+                            <c:if test="${not empty sessionScope.userLogin}">
+                                <a href="${pageContext.request.contextPath}/profile" class="nav-item nav-link">Profile</a>
+                            </c:if>
                         </div>
-                        <a href="#" class="btn btn-primary rounded-pill py-2 px-4">Get Started</a>
+                        <c:choose>
+                            <c:when test="${not empty sessionScope.userLogin}">
+                                <!-- Khi user đã đăng nhập -->
+                                <span class="me-2 text-black">
+                                    👋 Xin chào, ${sessionScope.userLogin.name != null ? sessionScope.userLogin.name : sessionScope.userLogin.email}
+                                </span>
+                                <a href="${pageContext.request.contextPath}/logout" 
+                                   class="btn btn-danger rounded-pill py-2 px-4">
+                                    Logout
+                                </a>
+                            </c:when>
+
+                            <c:otherwise>
+                                <!-- Khi user chưa đăng nhập -->
+                                <a href="${pageContext.request.contextPath}/login" 
+                                   class="btn btn-primary rounded-pill py-2 px-4">
+                                    Login
+                                </a>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
                 </nav>
             </div>
@@ -320,7 +348,7 @@
                                 <div class="categories-content rounded-bottom p-4">
                                     <h4>${car.brand.brandName} ${car.model}</h4>
                                     <div class="mb-4">
-                                        <h4 class="bg-white text-primary rounded-pill py-2 px-4 mb-0">$${car.pricePerDay}/Day</h4>
+                                        <h4 class="bg-white text-primary rounded-pill py-2 px-4 mb-0">${car.pricePerDay} VND/Day</h4>
                                     </div>
                                     <div class="row gy-2 gx-0 text-center mb-4">
                                         <div class="col-4 border-end border-white">
