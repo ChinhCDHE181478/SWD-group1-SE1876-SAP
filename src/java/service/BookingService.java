@@ -83,4 +83,25 @@ public class BookingService {
             return null;
         }
     }
+    
+    public boolean attachPromotion(Booking booking) {
+        BookingDAO bookingDAO = new BookingDAO();
+        
+        if (booking == null || booking.getBookingId() <= 0 
+                || booking.getPromotion() == null || booking.getPromotion().getPromotionId() <= 0) {
+            System.err.println("⚠️ Invalid booking or promotion info, cannot attach!");
+            return false;
+        }
+
+        boolean success = bookingDAO.updatePromotionForBooking(
+                booking.getBookingId(), booking.getPromotion().getPromotionId()
+        );
+
+        if (success) {
+            System.out.println("✅ Promotion attached successfully to booking #" + booking.getBookingId());
+        } else {
+            System.err.println("❌ Failed to attach promotion to booking #" + booking.getBookingId());
+        }
+        return success;
+    }
 }

@@ -23,6 +23,10 @@ public class Promotion {
 
     public Promotion() {
     }
+    
+    public Promotion(long promotionId) {
+        this.promotionId = promotionId;
+    }
 
     public Promotion(long promotionId, String code, double discountPercent, Timestamp startDate, Timestamp endDate, double discountAmount, int usageLimitPerUser, int currentCount, String description) {
         this.promotionId = promotionId;

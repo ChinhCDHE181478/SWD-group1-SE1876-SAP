@@ -63,7 +63,7 @@ public class UserDAO extends DBContext<User> {
         // TODO: nếu muốn mã hoá: String hashed = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
         String sql = """
             INSERT INTO [User] (email, password, status, created_at, is_delete, role_id)
-            VALUES (?, ?, 'ACTIVE', GETDATE(), 0, 4)
+            VALUES (?, ?, 'ACTIVE', GETDATE(), 0, 3)
         """;
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);

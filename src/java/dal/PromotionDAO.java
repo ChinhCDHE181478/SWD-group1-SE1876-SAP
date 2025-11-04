@@ -9,38 +9,52 @@ package dal;
  * @author Chinh
  */
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import model.*;
 
 public class PromotionDAO extends DBContext<Promotion> {
 
-    public Promotion getPromotionByCode(String code) {
-        Promotion promo = null;
-        String sql = "SELECT * FROM Promotion WHERE code = ? AND GETDATE() BETWEEN start_date AND end_date";
+    public List<Promotion> getAllActivePromotions() {
+        List<Promotion> list = new ArrayList<>();
 
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, code);
-            ResultSet rs = ps.executeQuery();
+        String sql = """
+            SELECT 
+                promotion_id, code, discount_percent, start_date, end_date,
+                discount_amount, usage_limit_per_user, current_count, description
+            FROM Promotion
+            WHERE 
+                GETDATE() BETWEEN start_date AND end_date
+                AND (usage_limit_per_user = 0 OR current_count < usage_limit_per_user)
+            ORDER BY discount_percent DESC, discount_amount DESC
+        """;
 
-            if (rs.next()) {
-                promo = new Promotion();
-                promo.setPromotionId(rs.getLong("promotion_id"));
-                promo.setCode(rs.getString("code"));
-                promo.setDiscountPercent(rs.getDouble("discount_percent"));
-                promo.setDiscountAmount(rs.getDouble("discount_amount"));
-                promo.setStartDate(rs.getTimestamp("start_date"));
-                promo.setEndDate(rs.getTimestamp("end_date"));
-                promo.setCurrentCount(rs.getInt("current_count"));
-                promo.setUsageLimitPerUser(rs.getInt("usage_limit_per_user"));
-                promo.setDescription(rs.getString("description"));
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Promotion p = new Promotion();
+                p.setPromotionId(rs.getLong("promotion_id"));
+                p.setCode(rs.getString("code"));
+                p.setDiscountPercent(rs.getDouble("discount_percent"));
+                p.setStartDate(rs.getTimestamp("start_date"));
+                p.setEndDate(rs.getTimestamp("end_date"));
+                p.setDiscountAmount(rs.getDouble("discount_amount"));
+                p.setUsageLimitPerUser(rs.getInt("usage_limit_per_user"));
+                p.setCurrentCount(rs.getInt("current_count"));
+                p.setDescription(rs.getString("description"));
+                list.add(p);
             }
 
-            rs.close();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try { connection.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-
-        return promo;
+        return list;
     }
 }

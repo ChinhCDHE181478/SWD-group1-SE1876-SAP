@@ -15,6 +15,8 @@ public class Address {
     private String houseNumber;
     private User user;      // nếu có class User
     private Ward ward;      // Ward chứa District chứa Province
+    private Province province;
+    private District district;
 
     public Address() {}
 
@@ -24,6 +26,22 @@ public class Address {
         this.houseNumber = houseNumber;
         this.user = user;
         this.ward = ward;
+    }
+
+    public Province getProvince() {
+        return province;
+    }
+
+    public void setProvince(Province province) {
+        this.province = province;
+    }
+
+    public District getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(District district) {
+        this.district = district;
     }
 
     public long getAddressId() {

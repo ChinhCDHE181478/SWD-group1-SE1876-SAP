@@ -137,7 +137,11 @@
         <div class="container mt-5 mb-5">
             <h2 class="mb-4 text-primary">My Profile</h2>
 
-            <c:if test="${not empty message}">
+            <c:if test="${not empty warning}">
+                <div class="alert alert-info">${warning}</div>
+            </c:if>
+                
+             <c:if test="${not empty message}">
                 <div class="alert alert-info">${message}</div>
             </c:if>
 
@@ -147,11 +151,10 @@
                 <p><strong>Name:</strong> ${user.name}</p>
                 <p><strong>Email:</strong> ${user.email}</p>
                 <p><strong>Phone:</strong> ${user.phone}</p>
-                <p><strong>Role:</strong> ${user.role.roleName}</p>
             </div>
 
             <!-- Form cập nhật -->
-            <form action="${pageContext.request.contextPath}/profile" method="post" class="card p-4 shadow-sm">
+            <form action="${pageContext.request.contextPath}/ProfileServlet" method="post" class="card p-4 shadow-sm">
                 <h4 class="mb-3">Update Profile</h4>
 
                 <div class="mb-3">

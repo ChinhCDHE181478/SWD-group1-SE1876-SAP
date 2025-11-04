@@ -142,14 +142,19 @@
             </div>
         </div>
         <!-- Header End -->
-
-
+        
+        <c:if test="${not empty message}">
+                <div class="alert alert-info">${message}</div>
+                </c:if>
 
 
         <!-- Banner Start -->
         <div class="container-fluid banner py-5 wow zoomInDown" data-wow-delay="0.1s">
             <div class="container py-5">
+               
                 <c:set var="car" value="${car}" />
+                
+          
 
                 <div class="row g-5">
                     <!-- Hình ảnh (Carousel) -->
@@ -267,7 +272,7 @@
                             <jsp:useBean id="now" class="java.util.Date" scope="page"/>
                             <fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="today" />
 
-                            <form action="CreateBooking" method="post" class="mt-4" onsubmit="return validateDates()">
+                            <form action="ConfirmBookingServlet" method="post" class="mt-4" onsubmit="return validateDates()">
                                 <input type="hidden" name="carId" value="${car.carId}"/>
 
                                 <div class="row g-3 align-items-end">
@@ -282,40 +287,43 @@
                                         <input id="endDate" name="endDate" type="date" class="form-control" min="${today}" required>
                                     </div>
 
-<!-- Province -->
-<select id="provinceId" name="provinceId" class="form-select" required>
-  <option value="">-- Select Province --</option>
-  <c:forEach var="p" items="${provinces}">
-    <option value="${p.provinceId}">${p.provinceName}</option>
-  </c:forEach>
-</select>
+                                    <!-- Province -->
+                                    <select id="provinceId" name="provinceId" class="form-select" required>
+                                        <option value="">-- Select Province --</option>
+                                        <c:forEach var="p" items="${provinces}">
+                                            <option value="${p.provinceId}">${p.provinceName}</option>
+                                        </c:forEach>
+                                    </select>
 
-<!-- District: mỗi option gắn data-pid = provinceId -->
-<select id="districtId" name="districtId" class="form-select" required>
-  <option value="">-- Select District --</option>
-  <c:forEach var="p" items="${provinces}">
-    <c:forEach var="d" items="${p.districts}">
-      <option value="${d.districtId}" data-pid="${p.provinceId}">${d.districtName}</option>
-    </c:forEach>
-  </c:forEach>
-</select>
+                                    <!-- District: mỗi option gắn data-pid = provinceId -->
+                                    <select id="districtId" name="districtId" class="form-select" required>
+                                        <option value="">-- Select District --</option>
+                                        <c:forEach var="p" items="${provinces}">
+                                            <c:forEach var="d" items="${p.districts}">
+                                                <option value="${d.districtId}" data-pid="${p.provinceId}">${d.districtName}</option>
+                                            </c:forEach>
+                                        </c:forEach>
+                                    </select>
 
-<!-- Ward: mỗi option gắn data-did = districtId, data-pid = provinceId -->
-<select id="wardId" name="wardId" class="form-select" required>
-  <option value="">-- Select Ward --</option>
-  <c:forEach var="p" items="${provinces}">
-    <c:forEach var="d" items="${p.districts}">
-      <c:forEach var="w" items="${d.wards}">
-        <option value="${w.wardId}" data-did="${d.districtId}" data-pid="${p.provinceId}">
-          ${w.wardName}
-        </option>
-      </c:forEach>
-    </c:forEach>
-  </c:forEach>
-</select>
+                                    <!-- Ward: mỗi option gắn data-did = districtId, data-pid = provinceId -->
+                                    <select id="wardId" name="wardId" class="form-select" required>
+                                        <option value="">-- Select Ward --</option>
+                                        <c:forEach var="p" items="${provinces}">
+                                            <c:forEach var="d" items="${p.districts}">
+                                                <c:forEach var="w" items="${d.wards}">
+                                                    <option value="${w.wardId}" data-did="${d.districtId}" data-pid="${p.provinceId}">
+                                                        ${w.wardName}
+                                                    </option>
+                                                </c:forEach>
+                                            </c:forEach>
+                                        </c:forEach>
+                                    </select>
 
-<!-- Optional: backend muốn đọc provinceId “chắc chắn đúng” -->
-<input type="hidden" id="selectedProvinceId" name="selectedProvinceId"/>
+                                    <!-- Optional: backend muốn đọc provinceId “chắc chắn đúng” -->
+                                    <input type="hidden" id="selectedProvinceId" name="selectedProvinceId"/>
+                                    <input type="hidden" id="provinceName" name="provinceName">
+                                    <input type="hidden" id="districtName" name="districtName">
+                                    <input type="hidden" id="wardName" name="wardName">
 
                                     <!-- House Number -->
                                     <div class="col-md-3">
@@ -327,6 +335,19 @@
                                     <div class="col-md-9">
                                         <label class="form-label">Address Detail</label>
                                         <input type="text" name="addressDetail" class="form-control" placeholder="Street name or landmark">
+                                    </div>
+
+                                    <!-- Accept Terms -->
+                                    <div class="col-md-12 mt-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="acceptTerms" required>
+                                            <label class="form-check-label" for="acceptTerms">
+                                                I have read and agree to the 
+                                                <a href="terms.jsp" target="_blank" class="text-primary text-decoration-underline">
+                                                    Terms and Conditions
+                                                </a>.
+                                            </label>
+                                        </div>
                                     </div>
 
                                     <div class="col-md-12 mt-3">
@@ -443,124 +464,145 @@
 
         <!-- Template Javascript -->
         <script src="js/main.js"></script>
-        
-        <script>
-(function () {
-  const provinceEl = document.getElementById('provinceId');
-  const districtEl = document.getElementById('districtId');
-  const wardEl     = document.getElementById('wardId');
-  const hiddenProv = document.getElementById('selectedProvinceId');
-
-  const districtOpts = Array.from(districtEl.querySelectorAll('option[data-pid]'));
-  const wardOpts     = Array.from(wardEl.querySelectorAll('option[data-did]'));
-
-  // --- helpers ---
-  const clearSelect = (sel) => { sel.value = ''; };
-  const setHiddenProvince = (pid) => { if (hiddenProv) hiddenProv.value = pid || ''; };
-
-  function filterDistrictsByProvince(pid) {
-    let keep = 0;
-    districtOpts.forEach(o => {
-      const match = pid ? (o.dataset.pid === String(pid)) : true;
-      o.hidden = !match;
-      if (match) keep++;
-    });
-    // Nếu district đang chọn không thuộc province mới → clear
-    const cur = districtEl.selectedOptions[0];
-    if (cur && cur.dataset && cur.dataset.pid !== String(pid)) clearSelect(districtEl);
-    return keep;
-  }
-
-  function filterWardsByProvince(pid) {
-    wardOpts.forEach(o => {
-      const match = pid ? (o.dataset.pid === String(pid)) : true;
-      o.hidden = !match;
-    });
-    // Nếu ward đang chọn không thuộc province mới → clear
-    const cur = wardEl.selectedOptions[0];
-    if (cur && cur.dataset && cur.dataset.pid !== String(pid)) clearSelect(wardEl);
-  }
-
-  function filterWardsByDistrict(did) {
-    wardOpts.forEach(o => {
-      const match = did ? (o.dataset.did === String(did)) : true;
-      o.hidden = !match;
-    });
-    // Nếu ward đang chọn không thuộc district mới → clear
-    const cur = wardEl.selectedOptions[0];
-    if (cur && cur.dataset && cur.dataset.did !== String(did)) clearSelect(wardEl);
-  }
-
-  // --- sync flows ---
-  // 1) Province selected → lọc District/ Ward theo province
-  provinceEl.addEventListener('change', () => {
-    const pid = provinceEl.value;
-    setHiddenProvince(pid);
-    filterDistrictsByProvince(pid);
-    // Ward theo province (anh muốn ward phải cùng province luôn)
-    filterWardsByProvince(pid);
-  });
-
-  // 2) District selected (có thể trước khi chọn province)
-  districtEl.addEventListener('change', () => {
-    const dOpt = districtEl.selectedOptions[0];
-    if (!dOpt) return;
-
-    const pid = dOpt.dataset.pid;          // province của district
-    // Nếu province select khác → tự sync lại
-    if (pid && provinceEl.value !== String(pid)) {
-      provinceEl.value = String(pid);
-      setHiddenProvince(pid);
-      filterDistrictsByProvince(pid);      // show đúng các district thuộc province
-    }
-    // Ward chỉ thuộc district được chọn
-    const did = districtEl.value;
-    filterWardsByDistrict(did);
-  });
-
-  // 3) Ward selected (có thể trước khi chọn district/province)
-  wardEl.addEventListener('change', () => {
-    const wOpt = wardEl.selectedOptions[0];
-    if (!wOpt) return;
-
-    const pid = wOpt.dataset.pid;          // province của ward
-    const did = wOpt.dataset.did;          // district của ward
-
-    // Sync province nếu khác
-    if (pid && provinceEl.value !== String(pid)) {
-      provinceEl.value = String(pid);
-      setHiddenProvince(pid);
-      filterDistrictsByProvince(pid);
-    }
-    // Sync district nếu khác
-    if (did && districtEl.value !== String(did)) {
-      districtEl.value = String(did);
-    }
-    // Ward bị lọc theo district
-    filterWardsByDistrict(did);
-  });
-
-  // --- optional: khởi tạo nhẹ nhàng (không lọc gì cho tới khi có chọn) ---
-  setHiddenProvince(provinceEl.value || '');
-})();
-</script>
-
 
         <script>
-window.validateDates = function() {
-  const s = document.getElementById("startDate").value;
-  const e = document.getElementById("endDate").value;
-  if (!s || !e) {
-    alert("⚠️ Please select both start and end date!");
-    return false;
-  }
-  if (new Date(s) >= new Date(e)) {
-    alert("❌ End date must be after start date!");
-    return false;
-  }
-  return true;
-};
-</script>
+                                function validateDates() {
+                                    const start = document.getElementById('startDate').value;
+                                    const end = document.getElementById('endDate').value;
+                                    const terms = document.getElementById('acceptTerms').checked;
+
+                                    if (!terms) {
+                                        alert('⚠️ Please read and accept the Terms and Conditions before booking.');
+                                        return false;
+                                    }
+
+                                    if (start && end && start > end) {
+                                        alert('⚠️ End date must be after start date.');
+                                        return false;
+                                    }
+
+                                    return true;
+                                }
+        </script>
+
+        <script>
+            (function () {
+                const provinceEl = document.getElementById('provinceId');
+                const districtEl = document.getElementById('districtId');
+                const wardEl = document.getElementById('wardId');
+                const hiddenProv = document.getElementById('selectedProvinceId');
+
+                // 🌟 Thêm 3 hidden input cho tên
+                const provNameEl = document.getElementById('provinceName');
+                const distNameEl = document.getElementById('districtName');
+                const wardNameEl = document.getElementById('wardName');
+
+                const districtOpts = Array.from(districtEl.querySelectorAll('option[data-pid]'));
+                const wardOpts = Array.from(wardEl.querySelectorAll('option[data-did]'));
+
+                const clearSelect = (sel) => {
+                    sel.value = '';
+                };
+
+                const setHiddenProvince = (pid) => {
+                    if (hiddenProv)
+                        hiddenProv.value = pid || '';
+                };
+
+                // 💡 Hàm cập nhật tên dựa trên option đang chọn
+                const updateNames = () => {
+                    provNameEl.value = provinceEl.selectedOptions[0]?.textContent || '';
+                    distNameEl.value = districtEl.selectedOptions[0]?.textContent || '';
+                    wardNameEl.value = wardEl.selectedOptions[0]?.textContent || '';
+                };
+
+                function filterDistrictsByProvince(pid) {
+                    districtOpts.forEach(o => o.hidden = pid ? (o.dataset.pid !== String(pid)) : false);
+                    const cur = districtEl.selectedOptions[0];
+                    if (cur && cur.dataset.pid !== String(pid))
+                        clearSelect(districtEl);
+                }
+
+                function filterWardsByProvince(pid) {
+                    wardOpts.forEach(o => o.hidden = pid ? (o.dataset.pid !== String(pid)) : false);
+                    const cur = wardEl.selectedOptions[0];
+                    if (cur && cur.dataset.pid !== String(pid))
+                        clearSelect(wardEl);
+                }
+
+                function filterWardsByDistrict(did) {
+                    wardOpts.forEach(o => o.hidden = did ? (o.dataset.did !== String(did)) : false);
+                    const cur = wardEl.selectedOptions[0];
+                    if (cur && cur.dataset.did !== String(did))
+                        clearSelect(wardEl);
+                }
+
+                provinceEl.addEventListener('change', () => {
+                    const pid = provinceEl.value;
+                    setHiddenProvince(pid);
+                    filterDistrictsByProvince(pid);
+                    filterWardsByProvince(pid);
+                    updateNames(); // ✅ cập nhật tên
+                });
+
+                districtEl.addEventListener('change', () => {
+                    const dOpt = districtEl.selectedOptions[0];
+                    if (!dOpt)
+                        return;
+
+                    const pid = dOpt.dataset.pid;
+                    if (pid && provinceEl.value !== String(pid)) {
+                        provinceEl.value = String(pid);
+                        setHiddenProvince(pid);
+                        filterDistrictsByProvince(pid);
+                    }
+
+                    const did = districtEl.value;
+                    filterWardsByDistrict(did);
+                    updateNames(); // ✅ cập nhật tên
+                });
+
+                wardEl.addEventListener('change', () => {
+                    const wOpt = wardEl.selectedOptions[0];
+                    if (!wOpt)
+                        return;
+
+                    const pid = wOpt.dataset.pid;
+                    const did = wOpt.dataset.did;
+
+                    if (pid && provinceEl.value !== String(pid)) {
+                        provinceEl.value = String(pid);
+                        setHiddenProvince(pid);
+                        filterDistrictsByProvince(pid);
+                    }
+                    if (did && districtEl.value !== String(did)) {
+                        districtEl.value = String(did);
+                    }
+                    filterWardsByDistrict(did);
+                    updateNames(); // ✅ cập nhật tên
+                });
+
+                // Gọi 1 lần khi load để sync ban đầu
+                updateNames();
+            })();
+        </script>
+
+
+        <script>
+            window.validateDates = function () {
+                const s = document.getElementById("startDate").value;
+                const e = document.getElementById("endDate").value;
+                if (!s || !e) {
+                    alert("⚠️ Please select both start and end date!");
+                    return false;
+                }
+                if (new Date(s) >= new Date(e)) {
+                    alert("❌ End date must be after start date!");
+                    return false;
+                }
+                return true;
+            };
+        </script>
 
 
 

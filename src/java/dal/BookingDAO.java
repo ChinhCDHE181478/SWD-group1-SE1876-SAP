@@ -104,4 +104,18 @@ public class BookingDAO extends DBContext<Booking> {
         return false; // mặc định là không khả dụng nếu có lỗi
     }
     
+     public boolean updatePromotionForBooking(long bookingId, long promotionId) {
+        String sql = "UPDATE Booking SET promotion_id = ? WHERE booking_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, promotionId);
+            ps.setLong(2, bookingId);
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+        return false;
+    }
 }

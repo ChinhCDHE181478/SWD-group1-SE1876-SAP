@@ -1,11 +1,6 @@
-<%-- 
-    Document   : profile
-    Created on : Oct 28, 2025, 11:50:55 PM
-    Author     : Chinh
---%>
-
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -14,7 +9,7 @@
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta content="" name="keywords">
         <meta content="" name="description">
-        
+
         <!-- Google Web Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,6 +23,7 @@
         <link href="lib/animate/animate.min.css" rel="stylesheet">
         <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
 
+
         <!-- Customized Bootstrap Stylesheet -->
         <link href="css/bootstrap.min.css" rel="stylesheet">
 
@@ -35,6 +31,8 @@
         <link href="css/style.css" rel="stylesheet">
     </head>
     <body>
+
+
         <!-- Spinner Start -->
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -42,7 +40,7 @@
             </div>
         </div>
         <!-- Spinner End -->
-        
+
         <!-- Topbar Start -->
         <div class="container-fluid topbar bg-secondary d-none d-xl-block w-100">
             <div class="container">
@@ -66,7 +64,7 @@
             </div>
         </div>
         <!-- Topbar End -->
-        
+
         <!-- Navbar & Hero Start -->
         <div class="container-fluid nav-bar sticky-top px-0 px-lg-4 py-2 py-lg-0">
             <div class="container">
@@ -80,15 +78,15 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarCollapse">
                         <div class="navbar-nav mx-auto py-0">
-                            <a href="HomeServlet" class="nav-item nav-link active">Home</a>
+                            <a href="HomeServlet" class="nav-item nav-link">Home</a>
                             <a href="about.html" class="nav-item nav-link">About</a>
                             <a href="service.html" class="nav-item nav-link">Service</a>
                             <a href="blog.html" class="nav-item nav-link">Blog</a>
 
                             <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                                <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
                                 <div class="dropdown-menu m-0">
-                                    <a href="feature.html" class="dropdown-item">Our Feature</a>
+                                    <a href="feature.html" class="dropdown-item active">Our Feature</a>
                                     <a href="cars.html" class="dropdown-item">Our Cars</a>
                                     <a href="team.html" class="dropdown-item">Our Team</a>
                                     <a href="testimonial.html" class="dropdown-item">Testimonial</a>
@@ -96,10 +94,6 @@
                                 </div>
                             </div>
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
-                            <!-- Nếu chưa đăng nhập -->
-                            <c:if test="${empty sessionScope.userLogin}">
-                                <a href="contact.html" class="nav-item nav-link">Contact</a>
-                            </c:if>
 
                             <!-- Nếu đã đăng nhập -->
                             <c:if test="${not empty sessionScope.userLogin}">
@@ -131,56 +125,158 @@
             </div>
         </div>
         <!-- Navbar & Hero End -->
-        
-        
-        
-        <div class="container mt-5 mb-5">
-            <h2 class="mb-4 text-primary">My Profile</h2>
 
-            <c:if test="${not empty warning}">
-                <div class="alert alert-info">${warning}</div>
-            </c:if>
-                
-             <c:if test="${not empty message}">
-                <div class="alert alert-info">${message}</div>
-            </c:if>
+        <div class="container py-5">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3 class="mb-0">🔒 Confirm Your Booking</h3>
+                </div>
 
-            <!-- Hiển thị thông tin hiện tại -->
-            <div class="card p-4 mb-4">
-                <h4 class="mb-3">Current Information</h4>
-                <p><strong>Name:</strong> ${user.name}</p>
-                <p><strong>Email:</strong> ${user.email}</p>
-                <p><strong>Phone:</strong> ${user.phone}</p>
+                <div class="card-body p-4">
+                    <c:set var="b" value="${booking}" />
+                    <div class="row mb-4">
+                        <div class="col-lg-6">
+                            <h5 class="text-primary fw-bold mb-3">👤 Customer Information</h5>
+                            <p><strong>Full Name:</strong> ${b.customer.name}</p>
+                            <p><strong>Phone:</strong> ${b.customer.phone}</p>
+                            <p><strong>Email:</strong> ${b.customer.email}</p>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <h5 class="text-primary fw-bold mb-3">📍 Address Information</h5>
+                            <p><strong>Pick-up Address:</strong> 
+                                ${b.address.houseNumber}, 
+                                ${b.address.addressDetail},
+                                ${b.address.ward.wardName}, 
+                                ${b.address.district.districtName}, 
+                                ${b.address.province.provinceName}</p>
+                        </div>
+                    </div>
+
+                    <hr class="my-4"/>
+
+                    <!-- Xe được thuê -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <img src="${b.car.images[0].image}" class="img-fluid rounded shadow-sm" alt="${b.car.model}">
+                        </div>
+                        <div class="col-md-8">
+                            <h5 class="text-primary fw-bold mb-3">🚗 Car Information</h5>
+                            <p><strong>Brand:</strong> ${b.car.brand.brandName}</p>
+                            <p><strong>Model:</strong> ${b.car.model}</p>
+                            <p><strong>Seats:</strong> ${b.car.seat}</p>
+                            <p><strong>License Required:</strong> ${b.car.driverLicenseRequired}</p>
+                            <p><strong>Price per day:</strong> 
+                                <fmt:formatNumber value="${b.car.pricePerDay}" type="currency" currencySymbol="₫"/>
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr class="my-4"/>
+
+                    <!-- Thông tin thời gian -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="text-primary fw-bold mb-3">⏰ Booking Duration</h5>
+                            <p><strong>Start Date:</strong> <fmt:formatDate value="${b.startDate}" pattern="yyyy-MM-dd"/></p>
+                            <p><strong>End Date:</strong> <fmt:formatDate value="${b.endDate}" pattern="yyyy-MM-dd"/></p>
+                            <p><strong>Total Days:</strong> ${days}</p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5 class="text-primary fw-bold mb-3">💰 Payment Summary</h5>
+                            <p><strong>Original Price:</strong> 
+                                <span id="originalPrice">
+                                    <fmt:formatNumber value="${totalPrice}" type="currency" currencySymbol="₫"/>
+                                </span>
+                            </p>
+                            <p><strong>Promotion:</strong> 
+                                <span id="selectedPromoText" class="text-success">None</span>
+                                <button type="button" class="btn btn-outline-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#promoModal">
+                                    🎁 Select Promotion
+                                </button>
+                            </p>
+                            <p><strong>Total after discount:</strong>
+                                <span id="finalPriceText" class="fw-bold text-danger">
+                                    <fmt:formatNumber value="${totalPrice}" type="currency" currencySymbol="₫"/>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <form id="confirmForm" action="CreateBooking" method="post">
+                        <!-- Hidden fields -->
+                        <input type="hidden" name="carId" value="${b.car.carId}">
+                        <input type="hidden" name="provinceId" value="${b.address.province.provinceId}">
+                        <input type="hidden" name="districtId" value="${b.address.district.districtId}">
+                        <input type="hidden" name="wardId" value="${b.address.ward.wardId}">
+                        <input type="hidden" name="startDate" value="${b.startDate}">
+                        <input type="hidden" name="endDate" value="${b.endDate}">
+                        <input type="hidden" name="houseNumber" value="${b.address.houseNumber}">
+                        <input type="hidden" name="addressDetail" value="${b.address.addressDetail}">
+                        <input type="hidden" id="promotionId" name="promotionId" value="">
+                        <input type="hidden" id="finalTotal" name="finalTotal" value="${totalPrice}">
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success rounded-pill px-4 py-2 me-3">
+                                ✅ Confirm Booking
+                            </button>
+                            <a href="CarDetailServlet?carId=${b.car.carId}" class="btn btn-outline-danger rounded-pill px-4 py-2">
+                                ❌ Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <!-- Form cập nhật -->
-            <form action="${pageContext.request.contextPath}/ProfileServlet" method="post" class="card p-4 shadow-sm">
-                <h4 class="mb-3">Update Profile</h4>
-
-                <div class="mb-3">
-                    <label for="name" class="form-label">Full Name</label>
-                    <input type="text" id="name" name="name" value="${user.name}" class="form-control" placeholder="Enter your name">
-                </div>
-
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter new password">
-                </div>
-
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Phone</label>
-                    <input type="text" id="phone" name="phone" value="${user.phone}" class="form-control" placeholder="Enter phone number">
-                </div>
-
-                <button type="submit" class="btn btn-primary px-4">Update</button>
-            </form>
         </div>
-                
-                
-                
-                
-                
-         <!-- Footer Start -->
+
+        <!-- Modal chọn Promotion -->
+        <div class="modal fade" id="promoModal" tabindex="-1" aria-labelledby="promoModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="promoModalLabel">🎁 Select Promotion</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-hover align-middle text-center">
+                            <thead class="table-primary">
+                                <tr><th>Code</th><th>Discount</th><th></th></tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach var="p" items="${promotions}">
+                                    <tr>
+                                        <td>${p.code}</td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${p.discountPercent > 0}">
+                                                    ${p.discountPercent}% off
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <fmt:formatNumber value="${p.discountAmount}" type="currency" currencySymbol="₫"/> off
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-success selectPromoBtn"
+                                                    data-id="${p.promotionId}"
+                                                    data-code="${p.code}"
+                                                    data-percent="${p.discountPercent}"
+                                                    data-amount="${p.discountAmount}">
+                                                Select
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Footer Start -->
         <div class="container-fluid footer py-5 wow fadeIn" data-wow-delay="0.2s">
             <div class="container py-5">
                 <div class="row g-5">
@@ -266,7 +362,6 @@
         <!-- Back to Top -->
         <a href="#" class="btn btn-secondary btn-lg-square rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>   
 
-
         <!-- JavaScript Libraries -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -279,7 +374,36 @@
 
         <!-- Template Javascript -->
         <script src="js/main.js"></script>
-    </body>
-</html>
 
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            $(function () {
+                const baseTotal = ${totalPrice};
 
+                $(".selectPromoBtn").click(function () {
+                    const id = $(this).data("id");
+                    const code = $(this).data("code");
+                    const percent = parseFloat($(this).data("percent"));
+                    const amount = parseFloat($(this).data("amount"));
+
+                    $("#promotionId").val(id);
+                    $("#selectedPromoText").text(code);
+
+                    let finalPrice = baseTotal;
+                    if (percent > 0)
+                        finalPrice -= baseTotal * (percent / 100);
+                    else if (amount > 0)
+                        finalPrice -= amount;
+
+                    if (finalPrice < 0)
+                        finalPrice = 0;
+
+                    $("#finalTotal").val(finalPrice.toFixed(2));
+                    $("#finalPriceText").text(finalPrice.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'}));
+
+                    $("#promoModal").modal("hide");
+                });
+            });
+        </script>
+
+    </body></html>
