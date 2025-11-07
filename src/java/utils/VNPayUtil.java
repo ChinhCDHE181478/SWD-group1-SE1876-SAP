@@ -28,8 +28,8 @@ public class VNPayUtil {
     // ===== CONFIG =====
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     public static String vnp_ReturnUrl = "http://localhost:9999/SWD_Project/VNPayReturnServlet";
-    public static String vnp_TmnCode = "IWEN8M23";
-    public static String secretKey = "5KHHKTNBTNGL9PTDF2YOA1AJZMMMMEC7";
+    public static String vnp_TmnCode = "9HZKBNNN";
+    public static String secretKey = "8HGHV2MT8QI5NLICKG28HOBLJ0AATIE6";
     public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
 
     // ===== HASH METHODS =====
@@ -156,21 +156,14 @@ public class VNPayUtil {
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
 
-//        if (bankCode != null && !bankCode.isEmpty()) {
-//            vnp_Params.put("vnp_BankCode", bankCode);
-//        }
+        if (bankCode != null && !bankCode.isEmpty()) {
+            vnp_Params.put("vnp_BankCode", bankCode);
+        }
 
-//        vnp_Params.put("vnp_BankCode", "NCB");
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
         vnp_Params.put("vnp_OrderType", orderType);
-
-        String locate = req.getParameter("language");
-        if (locate != null && !locate.isEmpty()) {
-            vnp_Params.put("vnp_Locale", locate);
-        } else {
-            vnp_Params.put("vnp_Locale", "vn");
-        }
+        vnp_Params.put("vnp_Locale", "vn");
         vnp_Params.put("vnp_ReturnUrl", VNPayUtil.vnp_ReturnUrl);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 

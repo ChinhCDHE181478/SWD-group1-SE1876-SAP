@@ -25,8 +25,6 @@ import service.*;
 public class VNPayReturnServlet extends HttpServlet {
 
     private final PaymentService paymentService = new PaymentService();
-    private final BookingDAO bookingDAO = new BookingDAO();
-    private final PaymentDAO paymentDAO = new PaymentDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -38,6 +36,9 @@ public class VNPayReturnServlet extends HttpServlet {
             String vnp_ResponseCode = request.getParameter("vnp_ResponseCode");
             String vnp_Amount = request.getParameter("vnp_Amount");
             String vnp_TransactionNo = request.getParameter("vnp_TransactionNo"); // optional
+            
+            BookingDAO bookingDAO = new BookingDAO();
+            PaymentDAO paymentDAO = new PaymentDAO();
 
             Long bookingId = paymentService.getBookingIdByTxnRef(txnRef);
             if (bookingId == null) {

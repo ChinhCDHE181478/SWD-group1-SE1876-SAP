@@ -9,8 +9,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import model.*;
@@ -71,6 +73,22 @@ public class ConfirmBookingServlet extends HttpServlet {
             String addressDetail = request.getParameter("addressDetail");
 
             Car car = carService.getCarById(carId);
+            
+            // Tính tổng tiền thuê
+            LocalDateTime start = LocalDateTime.parse(startDate);
+            LocalDateTime end = LocalDateTime.parse(endDate);
+            long hours = Duration.between(start, end).toHours();
+            double totalPrice = car.getPricePerDay() * (hours / 24.0);
+            
+            boolean c = carService.isAvailableToRent(carId, Timestamp.valueOf(start), Timestamp.valueOf(end));
+            if(c == false) {
+                request.setAttribute("message", "This car is not available to rent this time.");
+                List<Province> provinces = addressService.getAllProvincesWithDistrictsAndWards();
+                request.setAttribute("provinces", provinces);
+                request.setAttribute("car", car);
+                request.getRequestDispatcher("/car.jsp").forward(request, response);
+                return;
+            }
 
             boolean b = drivingLicenseService.checkDrivingLicense(user, car.getDriverLicenseRequired());
             if (b == false) {
@@ -81,22 +99,13 @@ public class ConfirmBookingServlet extends HttpServlet {
                 request.getRequestDispatcher("/car.jsp").forward(request, response);
                 return;
             }
-
-            // Tính tổng tiền thuê
-            LocalDate start = LocalDate.parse(startDate);
-            LocalDate end = LocalDate.parse(endDate);
-            long days = ChronoUnit.DAYS.between(start, end);
-            if (days <= 0) {
-                days = 1;
-            }
-            double totalPrice = car.getPricePerDay() * days;
-
+           
             // Tạo 1 booking tạm (chưa lưu DB)
             Booking tempBooking = new Booking();
             tempBooking.setCustomer(user);
             tempBooking.setCar(car);
-            tempBooking.setStartDate(java.sql.Timestamp.valueOf(startDate + " 00:00:00"));
-            tempBooking.setEndDate(java.sql.Timestamp.valueOf(endDate + " 00:00:00"));
+            tempBooking.setStartDate(Timestamp.valueOf(start));
+            tempBooking.setEndDate(Timestamp.valueOf(end));
             tempBooking.setStatus("PENDING");
 
             Address addr = new Address();
@@ -112,7 +121,7 @@ public class ConfirmBookingServlet extends HttpServlet {
             // Gửi booking sang JSP (qua request, không dùng session)
             request.setAttribute("booking", tempBooking);
             request.setAttribute("totalPrice", totalPrice);
-            request.setAttribute("days", days);
+            request.setAttribute("hours", hours);
 
             request.getRequestDispatcher("confirm-booking.jsp").forward(request, response);
 

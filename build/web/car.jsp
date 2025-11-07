@@ -35,6 +35,13 @@
 
         <!-- Template Stylesheet -->
         <link href="css/style.css" rel="stylesheet">
+
+        <style>
+            .modal-body {
+                max-height: 70vh;
+                overflow-y: auto;
+            }
+        </style>
     </head>
     <body>
         <!-- Spinner Start -->
@@ -142,19 +149,19 @@
             </div>
         </div>
         <!-- Header End -->
-        
+
         <c:if test="${not empty message}">
-                <div class="alert alert-info">${message}</div>
-                </c:if>
+            <div class="alert alert-info">${message}</div>
+        </c:if>
 
 
         <!-- Banner Start -->
         <div class="container-fluid banner py-5 wow zoomInDown" data-wow-delay="0.1s">
             <div class="container py-5">
-               
+
                 <c:set var="car" value="${car}" />
-                
-          
+
+
 
                 <div class="row g-5">
                     <!-- Hình ảnh (Carousel) -->
@@ -260,14 +267,25 @@
                                     <div class="d-flex flex-wrap gap-2">
                                         <c:forEach var="br" items="${car.bookedRanges}">
                                             <span class="badge text-bg-secondary" style="color: black">
-                                                <fmt:formatDate value="${br.startDate}" pattern="yyyy-MM-dd" />
+                                                ${br.startDate}
                                                 →
-                                                <fmt:formatDate value="${br.endDate}" pattern="yyyy-MM-dd" />
+                                                ${br.endDate}
                                             </span>
                                         </c:forEach>
                                     </div>
                                 </div>
                             </c:if>
+
+                            <script>
+                                const bookedRanges = [
+                                <c:forEach var="br" items="${car.bookedRanges}" varStatus="st">
+                                {
+                                start: "${br.startDate}",
+                                        end: "${br.endDate}"
+                                }${!st.last ? ',' : ''}
+                                </c:forEach>
+                                ];
+                            </script>
 
                             <jsp:useBean id="now" class="java.util.Date" scope="page"/>
                             <fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="today" />
@@ -277,14 +295,16 @@
 
                                 <div class="row g-3 align-items-end">
 
-                                    <div class="col-md-3">
-                                        <label class="form-label">Start date</label>
-                                        <input id="startDate" name="startDate" type="date" class="form-control" min="${today}" required>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Start Date & Time</label>
+                                        <input id="startDate" name="startDate" type="datetime-local"
+                                               class="form-control" required>
                                     </div>
 
-                                    <div class="col-md-3">
-                                        <label class="form-label">End date</label>
-                                        <input id="endDate" name="endDate" type="date" class="form-control" min="${today}" required>
+                                    <div class="col-md-6">
+                                        <label class="form-label">End Date & Time</label>
+                                        <input id="endDate" name="endDate" type="datetime-local"
+                                               class="form-control" required>
                                     </div>
 
                                     <!-- Province -->
@@ -343,7 +363,8 @@
                                             <input class="form-check-input" type="checkbox" id="acceptTerms" required>
                                             <label class="form-check-label" for="acceptTerms">
                                                 I have read and agree to the 
-                                                <a href="terms.jsp" target="_blank" class="text-primary text-decoration-underline">
+                                                <a href="#" class="text-primary text-decoration-underline" 
+                                                   data-bs-toggle="modal" data-bs-target="#termsModal">
                                                     Terms and Conditions
                                                 </a>.
                                             </label>
@@ -363,6 +384,31 @@
             </div>
         </div>
         <!-- Banner End -->
+
+        <!-- 🌸 Modal hiển thị nội dung điều khoản -->
+        <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content rounded-4 shadow">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 📝 Nội dung điều khoản (Senpai tự thêm vào đây sau nha) -->
+                        <p class="text-secondary">
+                            [Your Terms and Conditions content goes here... 💖]
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
 
 
 
@@ -466,23 +512,73 @@
         <script src="js/main.js"></script>
 
         <script>
-                                function validateDates() {
-                                    const start = document.getElementById('startDate').value;
-                                    const end = document.getElementById('endDate').value;
-                                    const terms = document.getElementById('acceptTerms').checked;
+                                document.addEventListener("DOMContentLoaded", () => {
+                                    const start = document.getElementById('startDate');
+                                    const end = document.getElementById('endDate');
+                                    const now = new Date().toISOString().slice(0, 16);
+                                    start.min = now;
+                                    end.min = now;
 
-                                    if (!terms) {
-                                        alert('⚠️ Please read and accept the Terms and Conditions before booking.');
-                                        return false;
-                                    }
+                                    start.addEventListener("change", () => {
+                                        if (start.value) {
+                                            const startTime = new Date(start.value);
+                                            const minEnd = new Date(startTime.getTime() + 2 * 60 * 60 * 1000); // +2h
+                                            end.min = minEnd.toISOString().slice(0, 16);
+                                        }
+                                    });
+                                });
+        </script>
 
-                                    if (start && end && start > end) {
-                                        alert('⚠️ End date must be after start date.');
-                                        return false;
-                                    }
+        <script>
+            function validateDates() {
+                const startInput = document.getElementById("startDate").value;
+                const endInput = document.getElementById("endDate").value;
+                const terms = document.getElementById("acceptTerms").checked;
 
-                                    return true;
-                                }
+                if (!terms) {
+                    alert("⚠️ Please accept the Terms and Conditions before booking.");
+                    return false;
+                }
+
+                if (!startInput || !endInput) {
+                    alert("⚠️ Please select both start and end time.");
+                    return false;
+                }
+
+                const start = new Date(startInput);
+                const end = new Date(endInput);
+
+                if (end <= start) {
+                    alert("❌ End time must be after start time!");
+                    return false;
+                }
+
+                // 🕒 Check trùng vùng đã booked
+                for (let i = 0; i < bookedRanges.length; i++) {
+                    const bookedStart = new Date(bookedRanges[i].start);
+                    const bookedEnd = new Date(bookedRanges[i].end);
+
+                    // Nếu có trùng (giao nhau)
+                    if (
+                            (start < bookedEnd && end > bookedStart)
+                            ) {
+                        alert("🚫 This car is already booked from " +
+                                bookedStart.toLocaleString() + " → " +
+                                bookedEnd.toLocaleString() +
+                                ".\nPlease select another time.");
+                        return false;
+                    }
+                }
+
+                // Check thuê tối thiểu 2 tiếng
+                const diffHours = (end - start) / (1000 * 60 * 60);
+                if (diffHours < 2) {
+                    alert("⚠️ Minimum rental duration is 2 hours.");
+                    return false;
+                }
+
+                return true;
+            }
         </script>
 
         <script>
@@ -585,23 +681,6 @@
                 // Gọi 1 lần khi load để sync ban đầu
                 updateNames();
             })();
-        </script>
-
-
-        <script>
-            window.validateDates = function () {
-                const s = document.getElementById("startDate").value;
-                const e = document.getElementById("endDate").value;
-                if (!s || !e) {
-                    alert("⚠️ Please select both start and end date!");
-                    return false;
-                }
-                if (new Date(s) >= new Date(e)) {
-                    alert("❌ End date must be after start date!");
-                    return false;
-                }
-                return true;
-            };
         </script>
 
 

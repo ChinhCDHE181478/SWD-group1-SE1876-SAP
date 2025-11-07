@@ -20,6 +20,7 @@ public class Promotion {
     private int usageLimitPerUser;
     private int currentCount;
     private String description;
+    private int max_number;
 
     public Promotion() {
     }
@@ -28,7 +29,7 @@ public class Promotion {
         this.promotionId = promotionId;
     }
 
-    public Promotion(long promotionId, String code, double discountPercent, Timestamp startDate, Timestamp endDate, double discountAmount, int usageLimitPerUser, int currentCount, String description) {
+    public Promotion(int max_number, long promotionId, String code, double discountPercent, Timestamp startDate, Timestamp endDate, double discountAmount, int usageLimitPerUser, int currentCount, String description) {
         this.promotionId = promotionId;
         this.code = code;
         this.discountPercent = discountPercent;
@@ -38,7 +39,18 @@ public class Promotion {
         this.usageLimitPerUser = usageLimitPerUser;
         this.currentCount = currentCount;
         this.description = description;
+        this.max_number = max_number;
     }
+
+    public int getMax_number() {
+        return max_number;
+    }
+
+    public void setMax_number(int max_number) {
+        this.max_number = max_number;
+    }
+    
+    
 
     public long getPromotionId() {
         return promotionId;

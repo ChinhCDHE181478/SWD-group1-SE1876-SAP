@@ -29,6 +29,17 @@
 
         <!-- Template Stylesheet -->
         <link href="css/style.css" rel="stylesheet">
+
+        <style>
+            body.modal-open {
+                overflow: auto !important;
+                padding-right: 0 !important;
+            }
+            .modal-backdrop {
+                display: none !important;
+            }
+        </style>
+        }
     </head>
     <body>
 
@@ -169,6 +180,9 @@
                             <p><strong>Price per day:</strong> 
                                 <fmt:formatNumber value="${b.car.pricePerDay}" type="currency" currencySymbol="₫"/>
                             </p>
+                            <p><strong>Deposit:</strong> 
+                                <fmt:formatNumber value="${b.car.deposit != null ? b.car.deposit : 0}" type="currency" currencySymbol="₫"/>
+                            </p>
                         </div>
                     </div>
 
@@ -178,9 +192,9 @@
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <h5 class="text-primary fw-bold mb-3">⏰ Booking Duration</h5>
-                            <p><strong>Start Date:</strong> <fmt:formatDate value="${b.startDate}" pattern="yyyy-MM-dd"/></p>
-                            <p><strong>End Date:</strong> <fmt:formatDate value="${b.endDate}" pattern="yyyy-MM-dd"/></p>
-                            <p><strong>Total Days:</strong> ${days}</p>
+                            <p><strong>Start Time:</strong> ${b.startDate}</p>
+                            <p><strong>End Time:</strong> ${b.endDate}</p>
+                            <p><strong>Total Hours:</strong> ${hours}</p>
                         </div>
 
                         <div class="col-md-6">
@@ -195,6 +209,11 @@
                                 <button type="button" class="btn btn-outline-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#promoModal">
                                     🎁 Select Promotion
                                 </button>
+                            </p>
+                            <p><strong>Deposit:</strong> 
+                                <span id="depositText">
+                                    <fmt:formatNumber value="${b.car.deposit != null ? b.car.deposit : 0}" type="currency" currencySymbol="₫"/>
+                                </span>
                             </p>
                             <p><strong>Total after discount:</strong>
                                 <span id="finalPriceText" class="fw-bold text-danger">
@@ -216,6 +235,7 @@
                         <input type="hidden" name="addressDetail" value="${b.address.addressDetail}">
                         <input type="hidden" id="promotionId" name="promotionId" value="">
                         <input type="hidden" id="finalTotal" name="finalTotal" value="${totalPrice}">
+                        <input type="hidden" id="depositValue" value="${b.car.deposit != null ? b.car.deposit : 0}">
 
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-success rounded-pill px-4 py-2 me-3">
@@ -376,34 +396,68 @@
         <script src="js/main.js"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
         <script>
-            $(function () {
-                const baseTotal = ${totalPrice};
+            document.addEventListener("DOMContentLoaded", function () {
+                // Tổng tiền thuê (từ server)
+                const baseTotal = parseFloat(document.getElementById("finalTotal").value) || 0;
+                // Tiền đặt cọc
+                const deposit = parseFloat(document.getElementById("depositValue").value) || 0;
 
-                $(".selectPromoBtn").click(function () {
-                    const id = $(this).data("id");
-                    const code = $(this).data("code");
-                    const percent = parseFloat($(this).data("percent"));
-                    const amount = parseFloat($(this).data("amount"));
+                // 👉 Cộng deposit vào tổng ban đầu
+                let totalWithDeposit = baseTotal + deposit;
+                document.getElementById("finalTotal").value = totalWithDeposit.toFixed(2);
+                document.getElementById("finalPriceText").textContent =
+                        totalWithDeposit.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'});
 
-                    $("#promotionId").val(id);
-                    $("#selectedPromoText").text(code);
+                // Khi chọn promotion
+                document.addEventListener("click", function (e) {
+                    if (e.target.classList.contains("selectPromoBtn")) {
+                        const btn = e.target;
+                        const id = btn.dataset.id;
+                        const code = btn.dataset.code;
+                        const percent = parseFloat(btn.dataset.percent) || 0;
+                        const amount = parseFloat(btn.dataset.amount) || 0;
 
-                    let finalPrice = baseTotal;
-                    if (percent > 0)
-                        finalPrice -= baseTotal * (percent / 100);
-                    else if (amount > 0)
-                        finalPrice -= amount;
+                        // Tính lại tổng sau giảm giá
+                        let discounted = baseTotal;
+                        if (percent > 0)
+                            discounted -= baseTotal * (percent / 100);
+                        else if (amount > 0)
+                            discounted -= amount;
+                        if (discounted < 0)
+                            discounted = 0;
 
-                    if (finalPrice < 0)
-                        finalPrice = 0;
+                        // 🧮 Cộng thêm deposit
+                        const finalPrice = discounted + deposit;
 
-                    $("#finalTotal").val(finalPrice.toFixed(2));
-                    $("#finalPriceText").text(finalPrice.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'}));
+                        // Cập nhật lại giao diện
+                        document.getElementById("promotionId").value = id;
+                        document.getElementById("selectedPromoText").textContent = code;
+                        document.getElementById("finalTotal").value = finalPrice.toFixed(2);
+                        document.getElementById("finalPriceText").textContent =
+                                finalPrice.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'});
 
-                    $("#promoModal").modal("hide");
+                        // Đóng modal Bootstrap đúng cách
+                        const promoModalEl = document.getElementById('promoModal');
+                        const modalInstance = bootstrap.Modal.getInstance(promoModalEl);
+                        if (modalInstance)
+                            modalInstance.hide();
+
+                        setTimeout(() => {
+                            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                            document.body.classList.remove('modal-open');
+                            document.body.style.removeProperty('padding-right');
+                        }, 400);
+                    }
                 });
             });
         </script>
+
+
+
+
 
     </body></html>

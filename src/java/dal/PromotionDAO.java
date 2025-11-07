@@ -21,11 +21,11 @@ public class PromotionDAO extends DBContext<Promotion> {
         String sql = """
             SELECT 
                 promotion_id, code, discount_percent, start_date, end_date,
-                discount_amount, usage_limit_per_user, current_count, description
+                discount_amount, usage_limit_per_user, current_count, description, max_number
             FROM Promotion
             WHERE 
                 GETDATE() BETWEEN start_date AND end_date
-                AND (usage_limit_per_user = 0 OR current_count < usage_limit_per_user)
+                AND (current_count < max_number)
             ORDER BY discount_percent DESC, discount_amount DESC
         """;
 
@@ -43,6 +43,7 @@ public class PromotionDAO extends DBContext<Promotion> {
                 p.setUsageLimitPerUser(rs.getInt("usage_limit_per_user"));
                 p.setCurrentCount(rs.getInt("current_count"));
                 p.setDescription(rs.getString("description"));
+                p.setMax_number(rs.getInt("max_number"));
                 list.add(p);
             }
 

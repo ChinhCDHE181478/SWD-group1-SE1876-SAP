@@ -7,6 +7,7 @@ package dal;
 import model.*;
 import java.util.*;
 import java.sql.*;
+import utils.Common;
 
 /**
  *
@@ -67,7 +68,7 @@ public class UserDAO extends DBContext<User> {
         """;
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
-            ps.setString(2, rawPassword); // hoặc hashed
+            ps.setString(2, Common.hashPassword(rawPassword)); // hoặc hashed
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -90,7 +91,7 @@ public class UserDAO extends DBContext<User> {
                 + "WHERE u.email = ? AND u.password = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
-            ps.setString(2, rawPassword);
+            ps.setString(2, Common.hashPassword(rawPassword));
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 User u = new User();
@@ -132,7 +133,7 @@ public class UserDAO extends DBContext<User> {
         }
         if (user.getPassword() != null) {
             sql.append("password = ?, ");
-            params.add(user.getPassword());
+            params.add(Common.hashPassword(user.getPassword()));
         }
         if (user.getPhone() != null) {
             sql.append("phone = ?, ");
