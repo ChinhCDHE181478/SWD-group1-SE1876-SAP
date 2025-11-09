@@ -14,9 +14,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.User;
 import service.BookingService;
 import java.sql.*;
+import java.util.List;
 import model.Booking;
 import model.Car;
 import model.Promotion;
+import service.CarService;
 import service.PaymentService;
 
 /**
@@ -28,6 +30,7 @@ public class CreateBookingServlet extends HttpServlet {
 
     private final BookingService bookingService = new BookingService();
     private final PaymentService paymentService = new PaymentService();
+    private final CarService carService = new CarService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -47,8 +50,8 @@ public class CreateBookingServlet extends HttpServlet {
             long provinceId = Long.parseLong(request.getParameter("provinceId"));
             long districtId = Long.parseLong(request.getParameter("districtId"));
             long wardId = Long.parseLong(request.getParameter("wardId"));
-            String startDate = request.getParameter("startDate").substring(0, 10);
-            String endDate = request.getParameter("endDate").substring(0, 10);
+            String startDate = request.getParameter("startDate");
+            String endDate = request.getParameter("endDate");
             String houseNumber = request.getParameter("houseNumber");
             String addressDetail = request.getParameter("addressDetail");
             double finalTotal = Double.parseDouble(request.getParameter("finalTotal"));
@@ -61,6 +64,14 @@ public class CreateBookingServlet extends HttpServlet {
             try {
                 promotionId = Long.parseLong(request.getParameter("promotionId"));
             } catch (Exception ignored) {
+            }
+
+            if (carService.isAvailableToRent(carId, Timestamp.valueOf(startDate), Timestamp.valueOf(endDate)) == false) {
+                List<Car> cars = carService.getFilterCarList(null, null, null, null, null, null, 1, 10);
+                request.setAttribute("cars", cars);
+                request.setAttribute("error", "This car is not available to rent");
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
+                return;
             }
 
             Booking created = bookingService.createBooking(

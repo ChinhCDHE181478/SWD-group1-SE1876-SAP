@@ -131,6 +131,10 @@
             </div>
         </div>
         <!-- Navbar & Hero End -->
+        
+        <c:if test="${not empty error}">
+            <div class="alert alert-info">${error}</div>
+        </c:if>
 
         <!-- Carousel Start -->
         <div class="header-carousel">

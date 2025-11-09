@@ -147,10 +147,6 @@
                     <label class="form-label">Email</label>
                     <input type="email" name="email" class="form-control" required />
                 </div>
-                <div class="col-12">
-                    <label class="form-label">Password</label>
-                    <input type="password" name="password" class="form-control" required minlength="6" />
-                </div>
                 <div class="col-12 d-flex gap-2">
                     <button type="submit" class="btn btn-success">Create account</button>
                     <a href="${pageContext.request.contextPath}/login" class="btn btn-outline-secondary">Back to Login</a>

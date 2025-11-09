@@ -135,7 +135,7 @@
         <div class="container mt-5 mb-5">
             <c:if test="${not empty payment}">
                 <p>Transaction Ref: ${payment.transactionRef}</p>
-                <p>Amount: ${payment.amount} VND</p>
+                <p>Amount: <fmt:formatNumber value="${payment.amount}" type="number" minFractionDigits="0"/> VND</p>
                 <p>Status: ${payment.status}</p>
                 <p>Booking ID: ${bookingId}</p>
             </c:if>

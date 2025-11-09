@@ -70,9 +70,8 @@ public class AuthServlet extends HttpServlet {
     private void handleRegister(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String email = trim(request.getParameter("email"));
-        String password = trim(request.getParameter("password"));
 
-        String error = authService.register(email, password);
+        String error = authService.register(email);
         if (error != null) {
             request.setAttribute("error", error);
             request.getRequestDispatcher("/register.jsp").forward(request, response);

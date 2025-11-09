@@ -61,7 +61,7 @@ public class BookingService {
             booking.setCustomer(customer);
             booking.setCar(car);
             booking.setAddress(address);
-            booking.setStatus("PENDING");
+            booking.setStatus("DRAFT");
             booking.setStartDate(new Timestamp(sdf.parse(start).getTime()));
             booking.setEndDate(new Timestamp(sdf.parse(end).getTime()));
             booking.setCreatedAt(new Timestamp(System.currentTimeMillis()));
@@ -84,6 +84,12 @@ public class BookingService {
         }
     }
     
+    public boolean updateStatus(long id, String status) {
+        BookingDAO b = new BookingDAO();
+        boolean rs = b.updateStatusForBooking(id, status);
+        return rs;
+    }
+    
     public boolean attachPromotion(Booking booking) {
         BookingDAO bookingDAO = new BookingDAO();
         
@@ -103,5 +109,20 @@ public class BookingService {
             System.err.println("❌ Failed to attach promotion to booking #" + booking.getBookingId());
         }
         return success;
+    }
+    
+    public void deleteById(long id ) {
+        BookingDAO bookingDAO = new BookingDAO();
+        bookingDAO.deleteByBookingId(id);
+    }
+    
+    public String getOwnerEmailByBookingId(long bookingId) {
+        BookingDAO bookingDAO = new BookingDAO();
+        return bookingDAO.getOwnerEmailByBookingId(bookingId);
+    }
+    
+    public Booking getBookingDetailById(long bookingId) {
+        BookingDAO bookingDAO = new BookingDAO();
+        return bookingDAO.getBookingDetailById(bookingId);
     }
 }
