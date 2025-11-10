@@ -522,64 +522,72 @@
                                     start.addEventListener("change", () => {
                                         if (start.value) {
                                             const startTime = new Date(start.value);
-                                            const minEnd = new Date(startTime.getTime() + 2 * 60 * 60 * 1000); // +2h
+
+                                            // Giới hạn tối thiểu +2 giờ
+                                            const minEnd = new Date(startTime.getTime() + 2 * 60 * 60 * 1000);
+                                            // Giới hạn tối đa +2 ngày
+                                            const maxEnd = new Date(startTime.getTime() + 2 * 24 * 60 * 60 * 1000);
+
                                             end.min = minEnd.toISOString().slice(0, 16);
+                                            end.max = maxEnd.toISOString().slice(0, 16);
                                         }
                                     });
                                 });
+
+                                function validateDates() {
+                                    const startInput = document.getElementById("startDate").value;
+                                    const endInput = document.getElementById("endDate").value;
+                                    const terms = document.getElementById("acceptTerms").checked;
+
+                                    if (!terms) {
+                                        alert("⚠️ Please accept the Terms and Conditions before booking.");
+                                        return false;
+                                    }
+
+                                    if (!startInput || !endInput) {
+                                        alert("⚠️ Please select both start and end time.");
+                                        return false;
+                                    }
+
+                                    const start = new Date(startInput);
+                                    const end = new Date(endInput);
+
+                                    if (end <= start) {
+                                        alert("❌ End time must be after start time!");
+                                        return false;
+                                    }
+
+                                    // 🕒 Check trùng vùng đã booked
+                                    for (let i = 0; i < bookedRanges.length; i++) {
+                                        const bookedStart = new Date(bookedRanges[i].start);
+                                        const bookedEnd = new Date(bookedRanges[i].end);
+
+                                        if (start < bookedEnd && end > bookedStart) {
+                                            alert("🚫 This car is already booked from " +
+                                                    bookedStart.toLocaleString() + " → " +
+                                                    bookedEnd.toLocaleString() +
+                                                    ".\nPlease select another time.");
+                                            return false;
+                                        }
+                                    }
+
+                                    // Kiểm tra thời lượng thuê
+                                    const diffHours = (end - start) / (1000 * 60 * 60);
+
+                                    if (diffHours < 2) {
+                                        alert("⚠️ Minimum rental duration is 2 hours.");
+                                        return false;
+                                    }
+
+                                    if (diffHours > 48) {
+                                        alert("🚫 Maximum rental duration is 2 days.");
+                                        return false;
+                                    }
+
+                                    return true;
+                                }
         </script>
 
-        <script>
-            function validateDates() {
-                const startInput = document.getElementById("startDate").value;
-                const endInput = document.getElementById("endDate").value;
-                const terms = document.getElementById("acceptTerms").checked;
-
-                if (!terms) {
-                    alert("⚠️ Please accept the Terms and Conditions before booking.");
-                    return false;
-                }
-
-                if (!startInput || !endInput) {
-                    alert("⚠️ Please select both start and end time.");
-                    return false;
-                }
-
-                const start = new Date(startInput);
-                const end = new Date(endInput);
-
-                if (end <= start) {
-                    alert("❌ End time must be after start time!");
-                    return false;
-                }
-
-                // 🕒 Check trùng vùng đã booked
-                for (let i = 0; i < bookedRanges.length; i++) {
-                    const bookedStart = new Date(bookedRanges[i].start);
-                    const bookedEnd = new Date(bookedRanges[i].end);
-
-                    // Nếu có trùng (giao nhau)
-                    if (
-                            (start < bookedEnd && end > bookedStart)
-                            ) {
-                        alert("🚫 This car is already booked from " +
-                                bookedStart.toLocaleString() + " → " +
-                                bookedEnd.toLocaleString() +
-                                ".\nPlease select another time.");
-                        return false;
-                    }
-                }
-
-                // Check thuê tối thiểu 2 tiếng
-                const diffHours = (end - start) / (1000 * 60 * 60);
-                if (diffHours < 2) {
-                    alert("⚠️ Minimum rental duration is 2 hours.");
-                    return false;
-                }
-
-                return true;
-            }
-        </script>
 
         <script>
             (function () {
