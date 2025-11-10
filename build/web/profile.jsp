@@ -14,7 +14,7 @@
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta content="" name="keywords">
         <meta content="" name="description">
-        
+
         <!-- Google Web Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,7 +42,7 @@
             </div>
         </div>
         <!-- Spinner End -->
-        
+
         <!-- Topbar Start -->
         <div class="container-fluid topbar bg-secondary d-none d-xl-block w-100">
             <div class="container">
@@ -66,7 +66,7 @@
             </div>
         </div>
         <!-- Topbar End -->
-        
+
         <!-- Navbar & Hero Start -->
         <div class="container-fluid nav-bar sticky-top px-0 px-lg-4 py-2 py-lg-0">
             <div class="container">
@@ -131,17 +131,17 @@
             </div>
         </div>
         <!-- Navbar & Hero End -->
-        
-        
-        
+
+
+
         <div class="container mt-5 mb-5">
             <h2 class="mb-4 text-primary">My Profile</h2>
 
             <c:if test="${not empty warning}">
                 <div class="alert alert-info">${warning}</div>
             </c:if>
-                
-             <c:if test="${not empty message}">
+
+            <c:if test="${not empty message}">
                 <div class="alert alert-info">${message}</div>
             </c:if>
 
@@ -172,15 +172,23 @@
                     <input type="text" id="phone" name="phone" value="${user.phone}" class="form-control" placeholder="Enter phone number">
                 </div>
 
+                <c:if test="${not empty bookingData}">
+                    <c:forEach var="entry" items="${bookingData}">
+                        <c:forEach var="val" items="${entry.value}">
+                            <input type="hidden" name="${entry.key}" value="${val}" />
+                        </c:forEach>
+                    </c:forEach>
+                </c:if>
+
                 <button type="submit" class="btn btn-primary px-4">Update</button>
             </form>
         </div>
-                
-                
-                
-                
-                
-         <!-- Footer Start -->
+
+
+
+
+
+        <!-- Footer Start -->
         <div class="container-fluid footer py-5 wow fadeIn" data-wow-delay="0.2s">
             <div class="container py-5">
                 <div class="row g-5">

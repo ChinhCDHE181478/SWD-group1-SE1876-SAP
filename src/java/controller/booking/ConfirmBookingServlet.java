@@ -8,13 +8,18 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import model.*;
 import service.*;
 
@@ -49,17 +54,6 @@ public class ConfirmBookingServlet extends HttpServlet {
                 return;
             }
 
-            if (user.getName() == null || user.getName().trim().isEmpty()
-                    || user.getPhone() == null || user.getPhone().trim().isEmpty()) {
-
-                // Gửi thông báo và chuyển hướng sang trang update profile
-                request.setAttribute("warning",
-                        "Please update your profile with your full name and phone number before booking.");
-                request.setAttribute("user", user);
-                request.getRequestDispatcher("profile.jsp").forward(request, response);
-                return;
-            }
-
             String provinceName = request.getParameter("provinceName");
             String districtName = request.getParameter("districtName");
             String wardName = request.getParameter("wardName");
@@ -72,16 +66,28 @@ public class ConfirmBookingServlet extends HttpServlet {
             String houseNumber = request.getParameter("houseNumber");
             String addressDetail = request.getParameter("addressDetail");
 
+            if (user.getName() == null || user.getName().trim().isEmpty()
+                    || user.getPhone() == null || user.getPhone().trim().isEmpty()) {
+
+                // Gửi thông báo và chuyển hướng sang trang update profile
+                request.setAttribute("warning",
+                        "Please update your profile with your full name and phone number before booking.");
+                request.setAttribute("user", user);
+                request.setAttribute("bookingData", request.getParameterMap());
+                request.getRequestDispatcher("profile.jsp").forward(request, response);
+                return;
+            }
+
             Car car = carService.getCarById(carId);
-            
+
             // Tính tổng tiền thuê
             LocalDateTime start = LocalDateTime.parse(startDate);
             LocalDateTime end = LocalDateTime.parse(endDate);
             long hours = Duration.between(start, end).toHours();
             double totalPrice = car.getPricePerDay() * (hours / 24.0);
-            
+
             boolean c = carService.isAvailableToRent(carId, Timestamp.valueOf(start), Timestamp.valueOf(end));
-            if(c == false) {
+            if (c == false) {
                 request.setAttribute("message", "This car is not available to rent this time.");
                 List<Province> provinces = addressService.getAllProvincesWithDistrictsAndWards();
                 request.setAttribute("provinces", provinces);
@@ -99,7 +105,7 @@ public class ConfirmBookingServlet extends HttpServlet {
                 request.getRequestDispatcher("/car.jsp").forward(request, response);
                 return;
             }
-           
+
             // Tạo 1 booking tạm (chưa lưu DB)
             Booking tempBooking = new Booking();
             tempBooking.setCustomer(user);

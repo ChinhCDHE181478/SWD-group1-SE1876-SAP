@@ -259,6 +259,10 @@
                                     </ul>
                                 </div>
                             </c:if>
+                            
+                            <div class="mb-3">
+                                <strong>Deposit: </strong> ${car.deposit} VND
+                            </div>
 
                             <!-- BOOKED RANGES (Hiển thị cho người dùng biết) -->
                             <c:if test="${not empty car.bookedRanges}">
@@ -526,7 +530,7 @@
                                             // Giới hạn tối thiểu +2 giờ
                                             const minEnd = new Date(startTime.getTime() + 2 * 60 * 60 * 1000);
                                             // Giới hạn tối đa +2 ngày
-                                            const maxEnd = new Date(startTime.getTime() + 2 * 24 * 60 * 60 * 1000);
+                                            const maxEnd = new Date(startTime.getTime() + 15 * 24 * 60 * 60 * 1000);
 
                                             end.min = minEnd.toISOString().slice(0, 16);
                                             end.max = maxEnd.toISOString().slice(0, 16);
@@ -579,8 +583,8 @@
                                         return false;
                                     }
 
-                                    if (diffHours > 48) {
-                                        alert("🚫 Maximum rental duration is 2 days.");
+                                    if (diffHours > 360) {
+                                        alert("🚫 Maximum rental duration is 15 days.");
                                         return false;
                                     }
 

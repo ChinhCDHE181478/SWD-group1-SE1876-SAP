@@ -66,8 +66,14 @@
                 animation: pulse 5s infinite reverse alternate;
             }
             @keyframes pulse {
-                0% { transform: scale(1); opacity: 0.8; }
-                100% { transform: scale(1.2); opacity: 1; }
+                0% {
+                    transform: scale(1);
+                    opacity: 0.8;
+                }
+                100% {
+                    transform: scale(1.2);
+                    opacity: 1;
+                }
             }
 
             .card-booking {
@@ -241,7 +247,7 @@
                 <nav class="navbar navbar-expand-lg navbar-light">
                     <a href="${pageContext.request.contextPath}/HomeServlet" class="navbar-brand p-0">
                         <h1 class="display-6 text-primary"><i class="fas fa-car-alt me-3"></i>Cental</h1>
-                        </a>
+                    </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                         <span class="fa fa-bars"></span>
                     </button>
@@ -299,7 +305,7 @@
 
                 <div class="card-body">
                     <c:set var="b" value="${booking}" />
-                    
+
                     <div class="row mb-4">
                         <div class="col-lg-6 detail-item">
                             <h5 class="section-title"><i class="fas fa-user-circle"></i>Customer Information</h5>
@@ -356,10 +362,13 @@
                                     <fmt:formatNumber value="${b.car.deposit != null ? b.car.deposit : 0}" type="currency" currencySymbol="₫"/>
                                 </span>
                             </p>
-                             <p><strong>Promotion:</strong> 
+                            <p><strong>Promotion:</strong> 
                                 <span id="selectedPromoText">None applied</span>
                                 <button type="button" class="btn btn-outline-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#promoModal">
                                     🎁 Select Promotion
+                                </button>
+                                <button type="button" id="removePromoBtn" class="btn btn-outline-danger btn-sm ms-2" style="display:none;">
+                                    ❌ Remove Promotion
                                 </button>
                             </p>
                             <hr style="margin: 1.5rem 0;" />
@@ -529,9 +538,7 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                // Tổng tiền thuê (từ server)
                 const baseTotal = parseFloat(document.getElementById("finalTotal").value) || 0;
-                // Tiền đặt cọc
                 const deposit = parseFloat(document.getElementById("depositValue").value) || 0;
 
                 // 👉 Cộng deposit vào tổng ban đầu
@@ -558,17 +565,19 @@
                         if (discounted < 0)
                             discounted = 0;
 
-                        // 🧮 Cộng thêm deposit
                         const finalPrice = discounted + deposit;
 
                         // Cập nhật lại giao diện
                         document.getElementById("promotionId").value = id;
-                        document.getElementById("selectedPromoText").textContent = code; // Cập nhật text mã
+                        document.getElementById("selectedPromoText").textContent = code;
                         document.getElementById("finalTotal").value = finalPrice.toFixed(2);
                         document.getElementById("finalPriceText").textContent =
                                 finalPrice.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'});
 
-                        // Đóng modal Bootstrap đúng cách
+                        // ✅ Hiện nút Remove Promotion
+                        document.getElementById("removePromoBtn").style.display = "inline-block";
+
+                        // Đóng modal
                         const promoModalEl = document.getElementById('promoModal');
                         const modalInstance = bootstrap.Modal.getInstance(promoModalEl);
                         if (modalInstance)
@@ -581,7 +590,22 @@
                         }, 400);
                     }
                 });
+
+                // ✅ Khi bấm nút “Remove Promotion”
+                document.getElementById("removePromoBtn").addEventListener("click", function () {
+                    // Reset lại giá về ban đầu (bao gồm deposit)
+                    const resetTotal = baseTotal + deposit;
+                    document.getElementById("promotionId").value = "";
+                    document.getElementById("selectedPromoText").textContent = "None applied";
+                    document.getElementById("finalTotal").value = resetTotal.toFixed(2);
+                    document.getElementById("finalPriceText").textContent =
+                            resetTotal.toLocaleString('vi-VN', {style: 'currency', currency: 'VND'});
+
+                    // Ẩn lại nút remove
+                    this.style.display = "none";
+                });
             });
+
         </script>
     </body>
 </html>

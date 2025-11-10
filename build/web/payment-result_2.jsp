@@ -1,11 +1,12 @@
 <%-- 
-    Document   : profile
-    Created on : Oct 28, 2025, 11:50:55 PM
+    Document   : payment-result
+    Created on : Nov 4, 2025, 1:26:23 PM
     Author     : Chinh
 --%>
 
-<%@ page contentType="text/html; charset=UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -27,6 +28,7 @@
         <!-- Libraries Stylesheet -->
         <link href="lib/animate/animate.min.css" rel="stylesheet">
         <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
 
         <!-- Customized Bootstrap Stylesheet -->
         <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -80,15 +82,15 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarCollapse">
                         <div class="navbar-nav mx-auto py-0">
-                            <a href="HomeServlet" class="nav-item nav-link active">Home</a>
+                            <a href="HomeServlet" class="nav-item nav-link">Home</a>
                             <a href="about.html" class="nav-item nav-link">About</a>
                             <a href="service.html" class="nav-item nav-link">Service</a>
                             <a href="blog.html" class="nav-item nav-link">Blog</a>
 
                             <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                                <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
                                 <div class="dropdown-menu m-0">
-                                    <a href="feature.html" class="dropdown-item">Our Feature</a>
+                                    <a href="feature.html" class="dropdown-item active">Our Feature</a>
                                     <a href="cars.html" class="dropdown-item">Our Cars</a>
                                     <a href="team.html" class="dropdown-item">Our Team</a>
                                     <a href="testimonial.html" class="dropdown-item">Testimonial</a>
@@ -96,10 +98,6 @@
                                 </div>
                             </div>
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
-                            <!-- Nếu chưa đăng nhập -->
-                            <c:if test="${empty sessionScope.userLogin}">
-                                <a href="contact.html" class="nav-item nav-link">Contact</a>
-                            </c:if>
 
                             <!-- Nếu đã đăng nhập -->
                             <c:if test="${not empty sessionScope.userLogin}">
@@ -131,60 +129,19 @@
             </div>
         </div>
         <!-- Navbar & Hero End -->
-
-
+        
+        
 
         <div class="container mt-5 mb-5">
-            <h2 class="mb-4 text-primary">My Profile</h2>
-
-            <c:if test="${not empty warning}">
-                <div class="alert alert-info">${warning}</div>
+            <c:if test="${not empty payment}">
+                <p>Transaction Ref: ${payment.transactionRef}</p>
+                <p>Amount: <fmt:formatNumber value="${payment.amount}" type="number" minFractionDigits="0"/> VND</p>
+                <p>Status: ${payment.status}</p>
+                <p>Booking ID: ${bookingId}</p>
             </c:if>
-
-            <c:if test="${not empty message}">
-                <div class="alert alert-info">${message}</div>
-            </c:if>
-
-            <!-- Hiển thị thông tin hiện tại -->
-            <div class="card p-4 mb-4">
-                <h4 class="mb-3">Current Information</h4>
-                <p><strong>Name:</strong> ${user.name}</p>
-                <p><strong>Email:</strong> ${user.email}</p>
-                <p><strong>Phone:</strong> ${user.phone}</p>
-            </div>
-
-            <!-- Form cập nhật -->
-            <form action="${pageContext.request.contextPath}/ProfileServlet" method="post" class="card p-4 shadow-sm">
-                <h4 class="mb-3">Update Profile</h4>
-
-                <div class="mb-3">
-                    <label for="name" class="form-label">Full Name</label>
-                    <input type="text" id="name" name="name" value="${user.name}" class="form-control" placeholder="Enter your name">
-                </div>
-
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter new password">
-                </div>
-
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Phone</label>
-                    <input type="text" id="phone" name="phone" value="${user.phone}" class="form-control" placeholder="Enter phone number">
-                </div>
-
-                <c:if test="${not empty bookingData}">
-                    <c:forEach var="entry" items="${bookingData}">
-                        <c:forEach var="val" items="${entry.value}">
-                            <input type="hidden" name="${entry.key}" value="${val}" />
-                        </c:forEach>
-                    </c:forEach>
-                </c:if>
-
-                <button type="submit" class="btn btn-primary px-4">Update</button>
-            </form>
+            <a href="HomeServlet">⬅ Back to Home</a>
+            <h2>${message}</h2>
         </div>
-
-
 
 
 
@@ -274,7 +231,6 @@
         <!-- Back to Top -->
         <a href="#" class="btn btn-secondary btn-lg-square rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>   
 
-
         <!-- JavaScript Libraries -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -287,7 +243,6 @@
 
         <!-- Template Javascript -->
         <script src="js/main.js"></script>
+
     </body>
 </html>
-
-
