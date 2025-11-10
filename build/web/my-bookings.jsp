@@ -1,18 +1,12 @@
-<%-- 
-    Document   : payment-result
-    Created on : Nov 4, 2025, 1:26:23 PM
-    Author     : Chinh
-    REVISED    : Gemini (Nov 10, 2025)
---%>
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
-<html>
+<html lang="vi">
     <head>
         <meta charset="utf-8">
-        <title>Payment Result - Cental</title>
+        <title>My Booking - Cental</title>
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta content="" name="keywords">
         <meta content="" name="description">
@@ -31,12 +25,16 @@
 
         <link href="css/style.css" rel="stylesheet">
     </head>
-    <body>
+    <body class="bg-light">
+        <!-- Spinner Start -->
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
         </div>
+        <!-- Spinner End -->
+
+        <!-- Topbar Start -->
         <div class="container-fluid topbar bg-secondary d-none d-xl-block w-100">
             <div class="container">
                 <div class="row gx-0 align-items-center" style="height: 45px;">
@@ -58,26 +56,30 @@
                 </div>
             </div>
         </div>
+        <!-- Topbar End -->
+
+        <!-- Navbar & Hero Start -->
         <div class="container-fluid nav-bar sticky-top px-0 px-lg-4 py-2 py-lg-0">
             <div class="container">
                 <nav class="navbar navbar-expand-lg navbar-light">
                     <a href="" class="navbar-brand p-0">
                         <h1 class="display-6 text-primary"><i class="fas fa-car-alt me-3"></i></i>Cental</h1>
-                        </a>
+                        <!-- <img src="img/logo.png" alt="Logo"> -->
+                    </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                         <span class="fa fa-bars"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarCollapse">
                         <div class="navbar-nav mx-auto py-0">
-                            <a href="HomeServlet" class="nav-item nav-link">Home</a>
+                            <a href="HomeServlet" class="nav-item nav-link active">Home</a>
                             <a href="about.html" class="nav-item nav-link">About</a>
                             <a href="service.html" class="nav-item nav-link">Service</a>
                             <a href="blog.html" class="nav-item nav-link">Blog</a>
 
                             <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
+                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                                 <div class="dropdown-menu m-0">
-                                    <a href="feature.html" class="dropdown-item active">Our Feature</a>
+                                    <a href="feature.html" class="dropdown-item">Our Feature</a>
                                     <a href="cars.html" class="dropdown-item">Our Cars</a>
                                     <a href="team.html" class="dropdown-item">Our Team</a>
                                     <a href="testimonial.html" class="dropdown-item">Testimonial</a>
@@ -85,17 +87,23 @@
                                 </div>
                             </div>
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
+                            <!-- Nếu chưa đăng nhập -->
+                            <c:if test="${empty sessionScope.userLogin}">
+                                <a href="contact.html" class="nav-item nav-link">Contact</a>
+                            </c:if>
 
+                            <!-- Nếu đã đăng nhập -->
                             <c:if test="${not empty sessionScope.userLogin}">
                                 <a href="${pageContext.request.contextPath}/profile" class="nav-item nav-link">Profile</a>
                             </c:if>
-                                
-                                <c:if test="${not empty sessionScope.userLogin}">
+
+                            <c:if test="${not empty sessionScope.userLogin}">
                                 <a href="${pageContext.request.contextPath}/MyBookings" class="nav-item nav-link">My Booking</a>
                             </c:if>
                         </div>
                         <c:choose>
                             <c:when test="${not empty sessionScope.userLogin}">
+                                <!-- Khi user đã đăng nhập -->
                                 <span class="me-2 text-black">
                                     👋 Xin chào, ${sessionScope.userLogin.name != null ? sessionScope.userLogin.name : sessionScope.userLogin.email}
                                 </span>
@@ -106,6 +114,7 @@
                             </c:when>
 
                             <c:otherwise>
+                                <!-- Khi user chưa đăng nhập -->
                                 <a href="${pageContext.request.contextPath}/login" 
                                    class="btn btn-primary rounded-pill py-2 px-4">
                                     Login
@@ -116,142 +125,96 @@
                 </nav>
             </div>
         </div>
-        <div class="container-fluid py-5" style="background-color: #f8f9fa;">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-8 col-md-10">
+        <!-- Navbar & Hero End -->
 
-                        <c:choose>
-                            <%-- ================= TRƯỜNG HỢP THANH TOÁN THÀNH CÔNG ================= --%>
-                            <c:when test="${not empty payment && payment.status == 'SUCCESS'}">
-                                <div class="card shadow-lg border-0 rounded-3 overflow-hidden wow fadeInUp" data-wow-delay="0.1s">
-                                    <div class="card-header bg-success text-white text-center p-4">
-                                        <i class="fas fa-check-circle fa-5x"></i>
-                                        <h1 class="display-4 mt-3 mb-0 text-white">Payment Successful!</h1>
-                                        <p class="lead mb-0">Your booking is confirmed.</p>
+
+
+
+
+        <div class="container mt-5 mb-5">
+            <h2 class="mb-4 text-center text-primary">🧾 Danh sách đặt xe của bạn</h2>
+
+            <c:if test="${empty myBookings}">
+                <div class="alert alert-warning text-center">Bạn chưa có đặt xe nào!</div>
+            </c:if>
+
+            <c:if test="${not empty myBookings}">
+                <table class="table table-bordered table-hover bg-white shadow-sm align-middle">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th>#</th>
+                            <th>Xe</th>
+                            <th>Biển số</th>
+                            <th>Ngày bắt đầu</th>
+                            <th>Ngày kết thúc</th>
+                            <th>Giá/ngày</th>
+                            <th>Trạng thái</th>
+                            <th>Chi tiết</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="b" items="${myBookings}" varStatus="st">
+                            <tr>
+                                <td class="text-center">${st.index + 1}</td>
+                                <td>${b.car.model}</td>
+                                <td>${b.car.licensePlate}</td>
+                                <td>${b.startDate}</td>
+                        <td>${b.endDate}</td>
+                        <td class="text-end">${b.car.pricePerDay} VND</td>
+                        <td class="text-center">
+                            <span class="badge bg-${b.status == 'SUCCESS' ? 'success' : (b.status == 'CANCELLED' ? 'danger' : 'secondary')}">
+                                ${b.status}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#modal${b.bookingId}">
+                                👁 View
+                            </button>
+                        </td>
+                        </tr>
+
+                        <!-- Modal Chi tiết -->
+                        <div class="modal fade" id="modal${b.bookingId}" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h5 class="modal-title">Chi tiết Booking #${b.bookingId}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
-                                    <div class="card-body p-4 p-md-5">
-                                        <h3 class="mb-3">Hello, ${sessionScope.userLogin.name}!</h3>
-                                        <p class="lead mb-4">
-                                            Thank you for your payment. Your car rental booking is complete. 
-                                            We've sent a confirmation email to <strong>${sessionScope.userLogin.email}</strong> with all the details.
-                                        </p>
-
-                                        <h4 class="mb-3 text-primary">Transaction Summary</h4>
-                                        <ul class="list-group list-group-flush mb-4">
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span><i class="fas fa-hashtag me-2 text-muted"></i>Booking ID</span>
-                                                <strong class="text-dark">#${bookingId}</strong>
-                                            </li>
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span><i class="fas fa-receipt me-2 text-muted"></i>Transaction Reference</span>
-                                                <span class="text-dark" style="word-break: break-all;">${payment.transactionRef}</span>
-                                            </li>
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span><i class="fas fa-credit-card me-2 text-muted"></i>Payment Method</span>
-                                                <span class="badge bg-primary fs-6">${payment.method}</span>
-                                            </li>
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span><i class="fas fa-file-invoice-dollar me-2 text-muted"></i>Total Amount Paid</span>
-                                                <strong class="fs-4 text-success">
-                                                    <fmt:formatNumber value="${payment.amount}" type="number" minFractionDigits="0"/> VND
-                                                </strong>
-                                            </li>
-                                        </ul>
-
-                                        <h4 class="mb-3 text-primary">What's Next?</h4>
-                                        <p>Please check your email for the full booking confirmation and instructions on picking up your vehicle. You can also view and manage all your bookings from your profile.</p>
-                                    </div>
-                                    <div class="card-footer text-center p-4 bg-light">
-                                        <a href="MyBookings" class="btn btn-primary btn-lg rounded-pill py-3 px-5 me-2">
-                                            <i class="fas fa-list-alt me-2"></i> View My Bookings
-                                        </a>
-                                        <a href="HomeServlet" class="btn btn-outline-secondary rounded-pill py-3 px-5">
-                                            <i class="fas fa-home me-2"></i> Back to Home
-                                        </a>
-                                    </div>
-                                </div>
-                            </c:when>
-
-                            <%-- ================= TRƯỜNG HỢP THANH TOÁN THẤT BẠI ================= --%>
-                            <c:when test="${not empty payment && payment.status == 'FAILED'}">
-                                <div class="card shadow-lg border-0 rounded-3 overflow-hidden wow fadeInUp" data-wow-delay="0.1s">
-                                    <div class="card-header bg-danger text-white text-center p-4">
-                                        <i class="fas fa-times-circle fa-5x"></i>
-                                        <h1 class="display-4 mt-3 mb-0 text-white">Payment Failed</h1>
-                                        <p class="lead mb-0">Your transaction could not be completed.</p>
-                                    </div>
-                                    <div class="card-body p-4 p-md-5">
-                                        <h3 class="mb-3">Hello, ${sessionScope.userLogin.name}.</h3>
-                                        <p class="lead mb-4">
-                                            Unfortunately, there was an issue processing your payment, or the transaction was cancelled.
-                                            Your booking (<strong>#${bookingId}</strong>) has not been confirmed.
-                                        </p>
-
-                                        <h4 class="mb-3 text-danger">Transaction Details</h4>
-                                        <ul class="list-group list-group-flush mb-4">
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span><i class="fas fa-hashtag me-2 text-muted"></i>Booking ID</span>
-                                                <strong class="text-dark">#${bookingId}</strong>
-                                            </li>
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span><i class="fas fa-receipt me-2 text-muted"></i>Transaction Reference</span>
-                                                <span class="text-dark" style="word-break: break-all;">${payment.transactionRef}</span>
-                                            </li>
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span><i class="fas fa-exclamation-triangle me-2 text-muted"></i>Payment Status</span>
-                                                <span class="badge bg-danger fs-6">${payment.status}</span>
-                                            </li>
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span><i class="fas fa-file-invoice-dollar me-2 text-muted"></i>Attempted Amount</span>
-                                                <strong class="fs-4 text-dark">
-                                                    <fmt:formatNumber value="${payment.amount}" type="number" minFractionDigits="0"/> VND
-                                                </strong>
+                                    <div class="modal-body">
+                                        <h6 class="text-primary mb-3">🚗 Thông tin xe</h6>
+                                        <ul>
+                                            <li><b>Model:</b> ${b.car.model}</li>
+                                            <li><b>Biển số:</b> ${b.car.licensePlate}</li>
+                                            <li><b>Giá thuê/ngày:</b> 
+                                            ${b.car.pricePerDay} VND
                                             </li>
                                         </ul>
-
-                                        <h4 class="mb-3 text-danger">What To Do?</h4>
-                                        <p>No funds have been withdrawn from your account. You can return to our car listing to create a new booking. If this problem persists, please contact our support team.</p>
-                                        <p class="text-center text-danger fw-bold fs-5">${message}</p>
+                                        <hr>
+                                        <h6 class="text-primary mb-3">📅 Thông tin đặt xe</h6>
+                                        <ul>
+                                            <li><b>Ngày bắt đầu:</b> ${b.startDate}</li>
+                                            <li><b>Ngày kết thúc:</b> ${b.endDate}</li>
+                                            <li><b>Trạng thái:</b> ${b.status}</li>
+                                        </ul>
                                     </div>
-                                    <div class="card-footer text-center p-4 bg-light">
-                                        <a href="HomeServlet" class="btn btn-warning btn-lg rounded-pill py-3 px-5 me-2">
-                                            <i class="fas fa-search me-2"></i> Find Another Car
-                                        </a>
-                                        <a href="HomeServlet" class="btn btn-outline-secondary rounded-pill py-3 px-5">
-                                            <i class="fas fa-home me-2"></i> Back to Home
-                                        </a>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                                     </div>
                                 </div>
-                            </c:when>
-
-                            <%-- ================= TRƯỜNG HỢP LỖI KHÔNG XÁC ĐỊNH ================= --%>
-                            <c:otherwise>
-                                <div class="card shadow-lg border-warning rounded-3 wow fadeInUp" data-wow-delay="0.1s">
-                                    <div class="card-header bg-warning text-dark text-center p-4">
-                                        <i class="fas fa-exclamation-triangle fa-5x"></i>
-                                        <h1 class="display-4 mt-3 mb-0">Invalid Request</h1>
-                                    </div>
-                                    <div class="card-body p-4 p-md-5 text-center">
-                                        <h3 class="mb-3">Oops! Something went wrong.</h3>
-                                        <p class="lead mb-4">
-                                            We couldn't find the transaction details you're looking for. This might be due to an expired session or an invalid link.
-                                        </p>
-                                        <p class="text-danger fw-bold fs-5">${error}</p>
-                                    </div>
-                                    <div class="card-footer text-center p-4 bg-light">
-                                        <a href="HomeServlet" class="btn btn-primary btn-lg rounded-pill py-3 px-5">
-                                            <i class="fas fa-home me-2"></i> Return to Homepage
-                                        </a>
-                                    </div>
-                                </div>
-                            </c:otherwise>
-                        </c:choose>
-
-                    </div>
-                </div>
-            </div>
+                            </div>
+                        </div>
+                    </c:forEach>
+                    </tbody>
+                </table>
+            </c:if>
         </div>
+
+
+
+
+
+        <!-- Footer Start -->
         <div class="container-fluid footer py-5 wow fadeIn" data-wow-delay="0.2s">
             <div class="container py-5">
                 <div class="row g-5">
@@ -313,6 +276,9 @@
                 </div>
             </div>
         </div>
+        <!-- Footer End -->
+
+        <!-- Copyright Start -->
         <div class="container-fluid copyright py-4">
             <div class="container">
                 <div class="row g-4 align-items-center">
@@ -320,13 +286,22 @@
                         <span class="text-body"><a href="#" class="border-bottom text-white"><i class="fas fa-copyright text-light me-2"></i>Your Site Name</a>, All right reserved.</span>
                     </div>
                     <div class="col-md-6 text-center text-md-end text-body">
+                        <!--/*** This template is free as long as you keep the below author’s credit link/attribution link/backlink. ***/-->
+                        <!--/*** If you'd like to use the template without the below author’s credit link/attribution link/backlink, ***/-->
+                        <!--/*** you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". ***/-->
                         Designed By <a class="border-bottom text-white" href="https://htmlcodex.com">HTML Codex</a>
                     </div>
                 </div>
             </div>
         </div>
-        <a href="#" class="btn btn-secondary btn-lg-square rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a> 
+        <!-- Copyright End -->
 
+
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-secondary btn-lg-square rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>   
+
+
+        <!-- JavaScript Libraries -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
         <script src="lib/wow/wow.min.js"></script>
@@ -336,7 +311,7 @@
         <script src="lib/owlcarousel/owl.carousel.min.js"></script>
 
 
+        <!-- Template Javascript -->
         <script src="js/main.js"></script>
-
     </body>
 </html>

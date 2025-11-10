@@ -14,6 +14,7 @@ import dal.PromotionDAO;
 import model.*;
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 public class BookingService {
     
@@ -56,14 +57,13 @@ public class BookingService {
             address.setAddressId(addressId);
 
             // 2️⃣ Chuẩn bị Booking
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Booking booking = new Booking();
             booking.setCustomer(customer);
             booking.setCar(car);
             booking.setAddress(address);
             booking.setStatus("DRAFT");
-            booking.setStartDate(new Timestamp(sdf.parse(start).getTime()));
-            booking.setEndDate(new Timestamp(sdf.parse(end).getTime()));
+            booking.setStartDate(Timestamp.valueOf(start));
+            booking.setEndDate(Timestamp.valueOf(end));
             booking.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 
             long bookingId = bookingDAO.insertBooking(booking);
@@ -124,5 +124,10 @@ public class BookingService {
     public Booking getBookingDetailById(long bookingId) {
         BookingDAO bookingDAO = new BookingDAO();
         return bookingDAO.getBookingDetailById(bookingId);
+    }
+    
+    public List<Booking> getBookingsByUserId(long userId) {
+        BookingDAO bookingDAO = new BookingDAO();
+        return bookingDAO.getBookingsByUserId(userId);
     }
 }

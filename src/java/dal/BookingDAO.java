@@ -11,6 +11,7 @@ import model.Booking;
  * @author Chinh
  */
 import java.sql.*;
+import java.util.*;
 import model.*;
 
 public class BookingDAO extends DBContext<Booking> {
@@ -263,5 +264,45 @@ public class BookingDAO extends DBContext<Booking> {
         }
 
         return booking;
+    }
+    
+    
+    public List<Booking> getBookingsByUserId(long userId) {
+        List<Booking> list = new ArrayList<>();
+        String sql = """
+            SELECT 
+                b.booking_id, b.start_date, b.end_date, b.status, b.created_at,
+                c.car_id, c.model, c.license_plate, c.price_per_day
+            FROM Booking b
+            JOIN Car c ON b.car_id = c.car_id
+            WHERE b.customer_id = ? AND (b.status IS NULL OR b.status <> 'DRAFT')
+            ORDER BY b.created_at DESC
+        """;
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Booking b = new Booking();
+                b.setBookingId(rs.getLong("booking_id"));
+                b.setStartDate(rs.getTimestamp("start_date"));
+                b.setEndDate(rs.getTimestamp("end_date"));
+                b.setStatus(rs.getString("status"));
+                b.setCreatedAt(rs.getTimestamp("created_at"));
+
+                Car car = new Car();
+                car.setCarId(rs.getLong("car_id"));
+                car.setModel(rs.getString("model"));
+                car.setLicensePlate(rs.getString("license_plate"));
+                car.setPricePerDay(rs.getDouble("price_per_day"));
+                b.setCar(car);
+
+                list.add(b);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try { connection.close(); } catch (Exception ignore) {}
+        }
+        return list;
     }
 }

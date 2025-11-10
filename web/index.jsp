@@ -105,6 +105,10 @@
                             <c:if test="${not empty sessionScope.userLogin}">
                                 <a href="${pageContext.request.contextPath}/ProfileServlet" class="nav-item nav-link">Profile</a>
                             </c:if>
+                                
+                            <c:if test="${not empty sessionScope.userLogin}">
+                                <a href="${pageContext.request.contextPath}/MyBookings" class="nav-item nav-link">My Booking</a>
+                            </c:if>
                         </div>
                         <c:choose>
                             <c:when test="${not empty sessionScope.userLogin}">

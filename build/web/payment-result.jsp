@@ -89,6 +89,10 @@
                             <c:if test="${not empty sessionScope.userLogin}">
                                 <a href="${pageContext.request.contextPath}/profile" class="nav-item nav-link">Profile</a>
                             </c:if>
+                                
+                                <c:if test="${not empty sessionScope.userLogin}">
+                                <a href="${pageContext.request.contextPath}/MyBookings" class="nav-item nav-link">My Booking</a>
+                            </c:if>
                         </div>
                         <c:choose>
                             <c:when test="${not empty sessionScope.userLogin}">
@@ -159,7 +163,7 @@
                                         <p>Please check your email for the full booking confirmation and instructions on picking up your vehicle. You can also view and manage all your bookings from your profile.</p>
                                     </div>
                                     <div class="card-footer text-center p-4 bg-light">
-                                        <a href="MyBookingsServlet" class="btn btn-primary btn-lg rounded-pill py-3 px-5 me-2">
+                                        <a href="MyBookings" class="btn btn-primary btn-lg rounded-pill py-3 px-5 me-2">
                                             <i class="fas fa-list-alt me-2"></i> View My Bookings
                                         </a>
                                         <a href="HomeServlet" class="btn btn-outline-secondary rounded-pill py-3 px-5">
