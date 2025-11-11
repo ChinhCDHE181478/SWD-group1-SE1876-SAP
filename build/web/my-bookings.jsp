@@ -94,7 +94,7 @@
 
                             <!-- Nếu đã đăng nhập -->
                             <c:if test="${not empty sessionScope.userLogin}">
-                                <a href="${pageContext.request.contextPath}/profile" class="nav-item nav-link">Profile</a>
+                                <a href="${pageContext.request.contextPath}/ProfileServlet" class="nav-item nav-link">Profile</a>
                             </c:if>
 
                             <c:if test="${not empty sessionScope.userLogin}">
