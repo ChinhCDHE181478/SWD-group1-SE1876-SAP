@@ -3,7 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/controller/payment/VNPayReturnServlet.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/dal/BookingDAO.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/model/Deposit.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/model/Booking.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/dal/DepositDAO.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/service/DepositService.java</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/dal/CarDAO.java</file>
             <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/web/my-bookings.jsp</file>
+            <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/web/car.jsp</file>
             <file>file:/C:/Users/Chinh/Documents/GitHub/SWD/src/java/dal/UserDAO.java</file>
         </group>
     </open-files>

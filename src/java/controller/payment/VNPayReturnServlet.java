@@ -2,7 +2,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-
 package controller.payment;
 
 import dal.*;
@@ -15,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.sql.Timestamp;
 import model.Booking;
 import model.Car;
+import model.Deposit;
 import model.Payment;
 import model.User;
 import service.*;
@@ -25,6 +25,7 @@ public class VNPayReturnServlet extends HttpServlet {
 
     private final PaymentService paymentService = new PaymentService();
     private final BookingService bookingService = new BookingService();
+    private final CarService carService = new CarService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -65,21 +66,36 @@ public class VNPayReturnServlet extends HttpServlet {
             if ("00".equals(vnp_ResponseCode)) {
                 payment.setStatus("SUCCESS");
                 long paymentId = paymentDAO.insertPayment(payment);
-                
+
                 boolean b = bookingService.updateStatus(bookingId, "PENDING");
 
                 Booking fullBooking = bookingService.getBookingDetailById(bookingId);
-                Car carInfo = fullBooking.getCar();
+                Car carInfo = carService.getCarById(fullBooking.getCar().getCarId());
+
+                // 💰 Nếu xe có deposit thì thêm record
+                if (carInfo.getDeposit() > 0) {
+                    Deposit deposit = new Deposit();
+                    deposit.setStatus("HELD"); // tạm giữ
+                    deposit.setAmount(carInfo.getDeposit());
+                    deposit.setPaymentMethod("VNPAY");
+                    deposit.setDepositDate(new Timestamp(System.currentTimeMillis()));
+                    deposit.setCustomer(fullBooking.getCustomer());
+                    deposit.setBooking(fullBooking);
+
+                    DepositDAO depositDAO = new DepositDAO();
+                    long depositId = depositDAO.insertDeposit(deposit);
+                    System.out.println("💰 Deposit created for booking " + bookingId + " | ID = " + depositId);
+                }
 
                 // --- Gửi mail KHÁCH HÀNG ---
                 String customerMail = fullBooking.getCustomer().getEmail();
                 String subjectCus = "✅ Xác nhận đặt xe thành công - " + carInfo.getModel();
                 String contentCus = String.format(
                         "Xin chào %s,\n\n"
-                                + "Bạn đã đặt xe %s (biển số %s) thành công.\n"
-                                + "Thời gian thuê: %s → %s\n"
-                                + "Giá thuê: %,d VNĐ/ngày.\n\n"
-                                + "Cảm ơn bạn đã tin tưởng dịch vụ của chúng tôi! 🚗💨",
+                        + "Bạn đã đặt xe %s (biển số %s) thành công.\n"
+                        + "Thời gian thuê: %s → %s\n"
+                        + "Giá thuê: %,d VNĐ/ngày.\n\n"
+                        + "Cảm ơn bạn đã tin tưởng dịch vụ của chúng tôi! 🚗💨",
                         fullBooking.getCustomer().getName(),
                         carInfo.getModel(),
                         carInfo.getLicensePlate(),
@@ -94,9 +110,9 @@ public class VNPayReturnServlet extends HttpServlet {
                 String subjectOwner = "🚗 Xe của bạn đã được thuê!";
                 String contentOwner = String.format(
                         "Xin chào %s,\n\n"
-                                + "Xe %s (biển số %s) của bạn đã được thuê bởi khách hàng %s.\n"
-                                + "Thời gian thuê: %s → %s\n\n"
-                                + "Hãy kiểm tra hệ thống để xem chi tiết đơn đặt xe. 💼",
+                        + "Xe %s (biển số %s) của bạn đã được thuê bởi khách hàng %s.\n"
+                        + "Thời gian thuê: %s → %s\n\n"
+                        + "Hãy kiểm tra hệ thống để xem chi tiết đơn đặt xe. 💼",
                         carInfo.getOwner().getName(),
                         carInfo.getModel(),
                         carInfo.getLicensePlate(),
@@ -111,7 +127,6 @@ public class VNPayReturnServlet extends HttpServlet {
                 request.setAttribute("payment", payment);
                 request.setAttribute("message", "✅ Thanh toán thành công!");
                 request.getRequestDispatcher("payment-result.jsp").forward(request, response);
-
             } else {
                 // ===== Thanh toán THẤT BẠI =====
                 payment.setStatus("FAILED");
@@ -122,9 +137,9 @@ public class VNPayReturnServlet extends HttpServlet {
                     String subjectFail = "⚠️ Thanh toán thất bại";
                     String contentFail = String.format(
                             "Xin chào %s,\n\n"
-                                    + "Rất tiếc, quá trình thanh toán hoặc đặt xe của bạn đã không thành công.\n"
-                                    + "Vui lòng kiểm tra lại thông tin thanh toán hoặc thử lại sau.\n\n"
-                                    + "Nếu cần hỗ trợ, hãy liên hệ đội ngũ chăm sóc khách hàng của chúng tôi. ❤️",
+                            + "Rất tiếc, quá trình thanh toán hoặc đặt xe của bạn đã không thành công.\n"
+                            + "Vui lòng kiểm tra lại thông tin thanh toán hoặc thử lại sau.\n\n"
+                            + "Nếu cần hỗ trợ, hãy liên hệ đội ngũ chăm sóc khách hàng của chúng tôi. ❤️",
                             customer.getName()
                     );
                     EmailUtil.sendEmail(customer.getEmail(), subjectFail, contentFail);
