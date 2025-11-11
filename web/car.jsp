@@ -532,9 +532,12 @@
                                 document.addEventListener("DOMContentLoaded", () => {
                                     const start = document.getElementById('startDate');
                                     const end = document.getElementById('endDate');
-                                    const now = new Date().toISOString().slice(0, 16);
-                                    start.min = now;
-                                    end.min = now;
+                                    const now = new Date();
+
+                                    // Giới hạn chọn start ít nhất 6 tiếng sau hiện tại
+                                    const minStart = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+                                    start.min = minStart.toISOString().slice(0, 16);
+                                    end.min = minStart.toISOString().slice(0, 16);
 
                                     start.addEventListener("change", () => {
                                         if (start.value) {
@@ -542,7 +545,7 @@
 
                                             // Giới hạn tối thiểu +2 giờ
                                             const minEnd = new Date(startTime.getTime() + 2 * 60 * 60 * 1000);
-                                            // Giới hạn tối đa +2 ngày
+                                            // Giới hạn tối đa +15 ngày
                                             const maxEnd = new Date(startTime.getTime() + 15 * 24 * 60 * 60 * 1000);
 
                                             end.min = minEnd.toISOString().slice(0, 16);
@@ -568,6 +571,14 @@
 
                                     const start = new Date(startInput);
                                     const end = new Date(endInput);
+                                    const now = new Date();
+
+                                    // Kiểm tra start ít nhất 6 tiếng sau hiện tại
+                                    const sixHoursLater = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+                                    if (start < sixHoursLater) {
+                                        alert("⚠️ Start time must be at least 6 hours from now.");
+                                        return false;
+                                    }
 
                                     if (end <= start) {
                                         alert("❌ End time must be after start time!");
@@ -596,7 +607,7 @@
                                         return false;
                                     }
 
-                                    if (diffHours > 360) {
+                                    if (diffHours > 15 * 24) {
                                         alert("🚫 Maximum rental duration is 15 days.");
                                         return false;
                                     }
@@ -604,6 +615,7 @@
                                     return true;
                                 }
         </script>
+
 
 
         <script>
