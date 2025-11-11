@@ -110,7 +110,7 @@
                             <c:if test="${not empty sessionScope.userLogin}">
                                 <a href="${pageContext.request.contextPath}/profile" class="nav-item nav-link">Profile</a>
                             </c:if>
-                                <c:if test="${not empty sessionScope.userLogin}">
+                            <c:if test="${not empty sessionScope.userLogin}">
                                 <a href="${pageContext.request.contextPath}/MyBookings" class="nav-item nav-link">My Booking</a>
                             </c:if>
                         </div>
@@ -262,7 +262,7 @@
                                     </ul>
                                 </div>
                             </c:if>
-                            
+
                             <div class="mb-3">
                                 <strong>Deposit: </strong> ${car.deposit} VND
                             </div>
@@ -401,10 +401,19 @@
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <!-- 📝 Nội dung điều khoản (Senpai tự thêm vào đây sau nha) -->
-                        <p class="text-secondary">
-                            [Your Terms and Conditions content goes here... 💖]
-                        </p>
+                        <!-- 📝 Nội dung điều khoản -->
+                        <div class="text-secondary">
+                            <p><strong>Other regulations:</strong></p>
+                            <ul>
+                                <li>Use the vehicle for the right purpose.</li>
+                                <li>Do not use the rented vehicle for illegal or unlawful purposes.</li>
+                                <li>Do not use the rented vehicle as collateral or mortgage.</li>
+                                <li>Do not smoke, chew gum, or litter in the vehicle.</li>
+                                <li>Do not carry fruit or food with strong odors in the vehicle.</li>
+                                <li>When returning the vehicle, if the vehicle is dirty or has an odor, the customer must clean the vehicle or pay an additional cleaning fee.</li>
+                            </ul>
+                            <p>Thank you very much, and wish you a wonderful trip!</p>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">
@@ -414,6 +423,7 @@
                 </div>
             </div>
         </div>
+
 
 
 

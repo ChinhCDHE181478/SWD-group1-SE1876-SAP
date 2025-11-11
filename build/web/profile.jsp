@@ -105,8 +105,8 @@
                             <c:if test="${not empty sessionScope.userLogin}">
                                 <a href="${pageContext.request.contextPath}/profile" class="nav-item nav-link">Profile</a>
                             </c:if>
-                                
-                                <c:if test="${not empty sessionScope.userLogin}">
+
+                            <c:if test="${not empty sessionScope.userLogin}">
                                 <a href="${pageContext.request.contextPath}/MyBookings" class="nav-item nav-link">My Booking</a>
                             </c:if>
                         </div>
@@ -174,6 +174,7 @@
                 <div class="mb-3">
                     <label for="phone" class="form-label">Phone</label>
                     <input type="text" id="phone" name="phone" value="${user.phone}" class="form-control" placeholder="Enter phone number">
+                    <div id="phoneError" class="text-danger mt-1" style="font-size: 0.9em;"></div>
                 </div>
 
                 <c:if test="${not empty bookingData}">
@@ -277,6 +278,25 @@
 
         <!-- Back to Top -->
         <a href="#" class="btn btn-secondary btn-lg-square rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>   
+
+        <script>
+            document.querySelector('form').addEventListener('submit', function (e) {
+                const phoneInput = document.getElementById('phone');
+                const phoneError = document.getElementById('phoneError');
+                const phoneValue = phoneInput.value.trim();
+                const phoneRegex = /^[0-9]{9,11}$/;
+
+                phoneError.textContent = ''; // Xóa lỗi cũ
+                phoneInput.classList.remove('is-invalid');
+
+                if (!phoneRegex.test(phoneValue)) {
+                    e.preventDefault();
+                    phoneError.textContent = '⚠️ Phone number must contain only digits and be between 9 to 11 numbers.';
+                    phoneInput.classList.add('is-invalid');
+                    return false;
+                }
+            });
+        </script>
 
 
         <!-- JavaScript Libraries -->
